@@ -1,53 +1,56 @@
-import { useState } from 'react';
-import { Plus, Search, Phone, Mail, MoreVertical } from 'lucide-react';
-
-interface Client {
-  id: string;
-  nom: string;
-  prenom: string;
-  email: string;
-  telephone: string;
-  objectifs: string[];
-  derniereSeance: string;
-}
+import { useState, useEffect } from 'react';
+import { Plus, Search, Phone, Mail, MoreVertical, Loader2 } from 'lucide-react';
+import { supabase, type Client } from '../lib/supabase';
 
 function Clients() {
   const [searchTerm, setSearchTerm] = useState('');
-  
-  const clients: Client[] = [
-    {
-      id: '1',
-      nom: 'Dupont',
-      prenom: 'Marie',
-      email: 'marie.dupont@email.com',
-      telephone: '06 12 34 56 78',
-      objectifs: ['Perte de poids', 'Tonification'],
-      derniereSeance: '2026-02-20',
-    },
-    {
-      id: '2',
-      nom: 'Martin',
-      prenom: 'Jean',
-      email: 'jean.martin@email.com',
-      telephone: '06 23 45 67 89',
-      objectifs: ['Prise de masse', 'Force'],
-      derniereSeance: '2026-02-22',
-    },
-    {
-      id: '3',
-      nom: 'Bernard',
-      prenom: 'Sophie',
-      email: 'sophie.bernard@email.com',
-      telephone: '06 34 56 78 90',
-      objectifs: ['Flexibilité', 'Bien-être'],
-      derniereSeance: '2026-02-24',
-    },
-  ];
+  const [clients, setClients] = useState<Client[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetchClients();
+  }, []);
+
+  async function fetchClients() {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('clients')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setClients(data || []);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const filteredClients = clients.filter(client =>
     `${client.prenom} ${client.nom}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.email.toLowerCase().includes(searchTerm.toLowerCase())
+    (client.email?.toLowerCase() || '').includes(searchTerm.toLowerCase())
   );
+
+  if (loading) {
+    return (
+      <div className="p-8 flex items-center justify-center h-64">
+        <Loader2 className="animate-spin text-emerald-600" size={32} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-8">
+        <div className="bg-red-50 text-red-600 p-4 rounded-lg">
+          Erreur: {error}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-8">
@@ -82,41 +85,50 @@ function Clients() {
           <div className="col-span-3">Client</div>
           <div className="col-span-3">Contact</div>
           <div className="col-span-4">Objectifs</div>
-          <div className="col-span-2">Dernière séance</div>
+          <div className="col-span-2">Actions</div>
         </div>
 
-        {filteredClients.map((client) => (
-          <div key={client.id} className="grid grid-cols-12 gap-4 p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors">
-            <div className="col-span-3">
-              <p className="font-medium text-gray-800">{client.prenom} {client.nom}</p>
-            </div>
-            <div className="col-span-3">
-              <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
-                <Mail size={14} />
-                {client.email}
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Phone size={14} />
-                {client.telephone}
-              </div>
-            </div>
-            <div className="col-span-4">
-              <div className="flex flex-wrap gap-2">
-                {client.objectifs.map((obj, idx) => (
-                  <span key={idx} className="px-2 py-1 bg-emerald-100 text-emerald-700 text-xs rounded-full">
-                    {obj}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div className="col-span-2 flex items-center justify-between">
-              <span className="text-sm text-gray-600">{client.derniereSeance}</span>
-              <button className="p-2 hover:bg-gray-200 rounded-lg">
-                <MoreVertical size={16} className="text-gray-400" />
-              </button>
-            </div>
+        {filteredClients.length === 0 ? (
+          <div className="p-8 text-center text-gray-500">
+            Aucun client trouvé. Ajoute ton premier client !
           </div>
-        ))}
+        ) : (
+          filteredClients.map((client) => (
+            <div key={client.id} className="grid grid-cols-12 gap-4 p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors">
+              <div className="col-span-3">
+                <p className="font-medium text-gray-800">{client.prenom} {client.nom}</p>
+              </div>
+              <div className="col-span-3">
+                {client.email && (
+                  <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
+                    <Mail size={14} />
+                    {client.email}
+                  </div>
+                )}
+                {client.telephone && (
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Phone size={14} />
+                    {client.telephone}
+                  </div>
+                )}
+              </div>
+              <div className="col-span-4">
+                <div className="flex flex-wrap gap-2">
+                  {client.objectifs?.map((obj, idx) => (
+                    <span key={idx} className="px-2 py-1 bg-emerald-100 text-emerald-700 text-xs rounded-full">
+                      {obj}
+                    </span>
+                  )) || <span className="text-gray-400 text-sm">Aucun objectif</span>}
+                </div>
+              </div>
+              <div className="col-span-2 flex items-center justify-end">
+                <button className="p-2 hover:bg-gray-200 rounded-lg">
+                  <MoreVertical size={16} className="text-gray-400" />
+                </button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
