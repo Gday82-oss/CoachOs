@@ -19,7 +19,7 @@ function Dashboard() {
     <div className="p-8">
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
-        <p className="text-gray-600">Vue d'ensemble de ton activité</p>
+        <p className="text-gray-600">Vue d&apos;ensemble de ton activité</p>
       </header>
 
       {/* Stats */}
@@ -31,7 +31,7 @@ function Dashboard() {
                 <p className="text-sm text-gray-600 mb-1">{stat.label}</p>
                 <p className="text-2xl font-bold text-gray-800">{stat.value}</p>
               </div>
-              <div className={`${stat.color} p-3 rounded-lg`>
+              <div className={`${stat.color} p-3 rounded-lg`}>
                 <stat.icon className="text-white" size={24} />
               </div>
             </div>
@@ -70,7 +70,7 @@ function Dashboard() {
             </button>
             <button className="w-full p-4 text-left bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors">
               <p className="font-medium text-purple-800">+ Créer programme</p>
-              <p className="text-sm text-purple-600">Nouveau programme d'entraînement</p>
+              <p className="text-sm text-purple-600">Nouveau programme d&apos;entraînement</p>
             </button>
           </div>
         </div>
