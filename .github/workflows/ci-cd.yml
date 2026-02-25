@@ -96,13 +96,14 @@ jobs:
           name: frontend-build
           path: ./client/dist
       
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+      
       - name: Deploy to Vercel
-        uses: vercel/action-deploy@v1
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: ./client
+        run: vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
   # Job 4: Deploy to VPS (Backend)
   deploy-backend:
