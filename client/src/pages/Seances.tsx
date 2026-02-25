@@ -12,7 +12,7 @@ interface Seance {
 }
 
 function Seances() {
-  const [seances, setSeances] = useState<Seance[]>([
+  const [seances] = useState<Seance[]>([
     {
       id: '1',
       client: 'Marie Dupont',
