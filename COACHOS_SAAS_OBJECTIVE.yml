@@ -1,0 +1,57 @@
+# 🎯 Objectif CoachOS SaaS
+# Configuration collaborative Kimi-Claw + Obi-Code-Bot
+
+objectif: "Créer CoachOS en SaaS monétisable pour coachs sportifs"
+
+# Phases du projet
+phases:
+  A:
+    nom: "Architecture Scalable"
+    description: "Préparer CoachOS pour supporter 1000+ utilisateurs"
+    priorite: "🔴 Critique"
+    
+  B:
+    nom: "Features IA"
+    description: "Ajouter intelligence artificielle (recommandations, analyse)"
+    priorite: "🟡 Important"
+    
+  C:
+    nom: "Sécurité & Auth"
+    description: "Sécuriser l'app pour données clients sensibles"
+    priorite: "🔴 Critique"
+    
+  D:
+    nom: "Cloud & Déploiement"
+    description: "Migrer vers infrastructure cloud professionnelle"
+    priorite: "🟡 Important"
+
+# Collaboration
+roles:
+  kimi_claw:
+    - Architecture système
+    - Décisions stratégiques
+    - Code review complexe
+    - Documentation technique
+    - Planification SaaS
+    
+  obi_code_bot:
+    - Monitoring quotidien
+    - Alertes temps réel
+    - Déploiements automatisés
+    - Qualité du code
+    - Support équipe
+    - Rapports d'activité
+
+# Points de contact
+communication:
+  telegram_groupe: "https://t.me/+WAA4VYnx0w81YTBk"
+  github_repo: "Gday82-oss/CoachOs"
+  vercel_url: "https://coach-os-khaki.vercel.app"
+
+# Métriques de succès
+kpi:
+  - "100 utilisateurs beta"
+  - "99.9% uptime"
+  - "Temps de chargement < 2s"
+  - "Premier paiement client"
+  - "1000€ MRR (Monthly Recurring Revenue)"
