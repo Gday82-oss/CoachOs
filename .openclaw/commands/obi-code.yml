@@ -1,0 +1,62 @@
+# Commandes Obi-Code pour OpenClaw
+# À ajouter dans la configuration OpenClaw
+
+commands:
+  obi:
+    description: "Obi-Code - Agent développeur senior"
+    subcommands:
+      review:
+        description: "Analyser une PR GitHub"
+        usage: "/obi review [numéro_pr]"
+        action: "github_review_pr"
+      
+      deploy:
+        description: "Déployer sur Vercel"
+        usage: "/obi deploy"
+        action: "vercel_deploy"
+      
+      status:
+        description: "Voir le statut CI/CD"
+        usage: "/obi status"
+        action: "github_check_status"
+      
+      issues:
+        description: "Lister les issues"
+        usage: "/obi issues"
+        action: "github_list_issues"
+      
+      create:
+        description: "Créer une issue"
+        usage: "/obi create [titre]"
+        action: "github_create_issue"
+      
+      help:
+        description: "Aide Obi-Code"
+        usage: "/obi help"
+        action: "show_help"
+
+# Réponses automatiques
+triggers:
+  - pattern: "obi.*review"
+    response: "🔍 Obi-Code analyse le code..."
+    action: "analyze_code"
+  
+  - pattern: "obi.*deploy"
+    response: "🚀 Lancement du déploiement..."
+    action: "trigger_deploy"
+  
+  - pattern: "obi.*status"
+    response: "📊 Vérification des checks..."
+    action: "check_ci_status"
+
+# Intégration GitHub
+github:
+  repo: "Gday82-oss/CoachOs"
+  auto_review: true
+  notify_on_deploy: true
+
+# Intégration Vercel
+vercel:
+  project: "coach-os"
+  auto_preview: true
+  auto_production: false  # Manuel uniquement
