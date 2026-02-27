@@ -1,4 +1,4 @@
--- CoachOS Database Schema
+-- MyCareCoach Database Schema
 -- Run this in Supabase SQL Editor
 
 -- Enable Row Level Security

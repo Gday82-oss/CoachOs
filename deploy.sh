@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# CoachOS Deployment Script
+# MyCareCoach Deployment Script
 # Usage: ./deploy.sh [environment]
 
 ENV=${1:-production}
-echo "🚀 Deploying CoachOS to $ENV..."
+echo "🚀 Deploying MyCareCoach to $ENV..."
 
 # Colors
 GREEN='\033[0;32m'
@@ -55,10 +55,10 @@ deploy_backend() {
     # Deploy to VPS
     echo "🚀 Deploying to VPS..."
     rsync -avz --exclude='node_modules' --exclude='.env' \
-        ./ root@$VPS_HOST:/root/coach-os/server/
+        ./ root@$VPS_HOST:/root/mycarecoach/server/
     
     # Restart PM2
-    ssh root@$VPS_HOST "cd /root/coach-os/server && pm2 restart coach-os-api || pm2 start dist/index.js --name coach-os-api"
+    ssh root@$VPS_HOST "cd /root/mycarecoach/server && pm2 restart mycarecoach-api || pm2 start dist/index.js --name mycarecoach-api"
     
     cd ..
     echo -e "${GREEN}✅ Backend deployed${NC}"
@@ -128,6 +128,6 @@ case "${2:-all}" in
         run_tests
         deploy_frontend
         deploy_backend
-        echo -e "${GREEN}🎉 CoachOS deployed successfully!${NC}"
+        echo -e "${GREEN}🎉 MyCareCoach deployed successfully!${NC}"
         ;;
 esac

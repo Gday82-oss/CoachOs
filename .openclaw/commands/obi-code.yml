@@ -51,12 +51,12 @@ triggers:
 
 # Intégration GitHub
 github:
-  repo: "Gday82-oss/CoachOs"
+  repo: "Gday82-oss/MyCareCoach"
   auto_review: true
   notify_on_deploy: true
 
 # Intégration Vercel
 vercel:
-  project: "coach-os"
+  project: "mycarecoach"
   auto_preview: true
   auto_production: false  # Manuel uniquement

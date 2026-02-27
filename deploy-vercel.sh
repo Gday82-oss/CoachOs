@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Deploy CoachOS to Vercel
+# Deploy MyCareCoach to Vercel
 # Usage: ./deploy-vercel.sh
 
-echo "🚀 Déploiement CoachOS sur Vercel..."
+echo "🚀 Déploiement MyCareCoach sur Vercel..."
 
 # Vérifier que vercel CLI est installé
 if ! command -v vercel &> /dev/null; then

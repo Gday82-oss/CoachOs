@@ -1,4 +1,4 @@
-# CoachOS Workflows
+# MyCareCoach Workflows
 
 ## 🚀 Workflows automatisés
 
