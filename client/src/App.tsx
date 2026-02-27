@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Routes, Route, NavLink } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, 
@@ -12,9 +12,12 @@ import {
   Sun,
   Moon,
   Bell,
-  Search
+  Search,
+  Heart
 } from 'lucide-react';
 import { useTheme } from './contexts/ThemeContext';
+import { supabase } from './lib/supabase';
+import Auth from './pages/Auth';
 import Dashboard from './pages/Dashboard';
 import Clients from './pages/Clients';
 import Seances from './pages/Seances';
@@ -24,7 +27,47 @@ import SettingsPage from './pages/Settings';
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Vérifier session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    // Écouter changements auth
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/auth');
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <Routes>
+        <Route path="/auth" element={<Auth />} />
+        <Route path="*" element={<Auth />} />
+      </Routes>
+    );
+  }
 
   const navItems = [
     { path: '/', icon: Users, label: 'Dashboard' },
@@ -54,10 +97,10 @@ function App() {
                 className="flex items-center gap-2"
               >
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">C</span>
+                  <Heart className="text-white" size={18} />
                 </div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-500 to-blue-500 bg-clip-text text-transparent">
-                  CoachOS
+                  MyCareCoach
                 </h1>
               </motion.div>
             )}
@@ -159,14 +202,18 @@ function App() {
 
               <motion.div
                 whileHover={{ scale: 1.05 }}
-                className="flex items-center gap-3 pl-4 border-l border-gray-200 dark:border-slate-800"
+                className="flex items-center gap-3 pl-4 border-l border-gray-200 dark:border-slate-800 cursor-pointer"
+                onClick={handleLogout}
               >
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center text-white font-medium">
-                  GD
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center text-white font-medium"
+                >
+                  {user?.user_metadata?.prenom?.[0] || 'C'}
                 </div>
                 <div className="hidden md:block">
-                  <p className="text-sm font-medium text-gray-800 dark:text-white">Gday</p>
-                  <p className="text-xs text-gray-500">Coach Pro</p>
+                  <p className="text-sm font-medium text-gray-800 dark:text-white">
+                    {user?.user_metadata?.prenom || 'Coach'}
+                  </p>
+                  <p className="text-xs text-gray-500">Déconnexion</p>
                 </div>
               </motion.div>
             </div>
@@ -180,6 +227,7 @@ function App() {
           <Route path="/programmes" element={<Programmes />} />
           <Route path="/paiements" element={<Paiements />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/auth" element={<Auth />} />
         </Routes>
       </main>
     </div>
