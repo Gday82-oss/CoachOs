@@ -1,7 +1,7 @@
 {
-  "name": "coach-os-workflows",
+  "name": "mycarecoach-workflows",
   "version": "1.0.0",
-  "description": "Automated workflows for CoachOS",
+  "description": "Automated workflows for MyCareCoach",
   "scripts": {
     "dev": "concurrently \"pnpm --filter client dev\" \"pnpm --filter server dev\"",
     "build": "pnpm --filter client build && pnpm --filter server build",

@@ -1,9 +1,9 @@
-# CoachOS - Checklist & Todo List
+# MyCareCoach - Checklist & Todo List
 
 ## ✅ CHECKLIST - Ce qui est fait
 
 ### Infrastructure
-- [x] Repo GitHub créé : https://github.com/Gday82-oss/CoachOs
+- [x] Repo GitHub créé : https://github.com/Gday82-oss/MyCareCoach
 - [x] Structure projet (client/server/shared)
 - [x] CI/CD GitHub Actions configuré
 - [x] Script de déploiement (deploy.sh)

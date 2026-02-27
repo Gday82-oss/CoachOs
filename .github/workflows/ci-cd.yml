@@ -1,4 +1,4 @@
-name: CoachOS CI/CD
+name: MyCareCoach CI/CD
 
 on:
   push:
@@ -115,10 +115,10 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /root/coach-os
+            cd /root/mycarecoach
             git pull origin main
             cd server
             pnpm install
             pnpm build
-            pm2 restart coach-os-api || pm2 start dist/index.js --name coach-os-api
+            pm2 restart mycarecoach-api || pm2 start dist/index.js --name mycarecoach-api
             pm2 save

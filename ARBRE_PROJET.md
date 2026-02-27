@@ -1,7 +1,7 @@
-# 🎯 CoachOS - Arborescence Projet
+# 🎯 MyCareCoach - Arborescence Projet
 
 ```
-/root/coach-os/
+/root/mycarecoach/
 │
 ├── 📁 client/                    # Frontend React + Vite
 │   ├── 📁 src/
@@ -52,7 +52,7 @@
 │       └── ci-cd.yml            # Pipeline CI/CD
 │
 ├── 📄 vercel.json               # Config Vercel
-├── 📄 COACHOS_SAAS_OBJECTIVE.yml # Objectifs SaaS
+├── 📄 MYCARECOACH_SAAS_OBJECTIVE.yml # Objectifs SaaS
 └── 📄 README.md
 ```
 
@@ -61,7 +61,7 @@
 | Environnement | URL |
 |---------------|-----|
 | Production | https://coach-os-khaki.vercel.app |
-| Repo GitHub | https://github.com/Gday82-oss/CoachOs |
+| Repo GitHub | https://github.com/Gday82-oss/MyCareCoach |
 | Bot Telegram | @ObiCodeBot |
 | Groupe Dev | https://t.me/+WAA4VYnx0w81YTBk |
 
