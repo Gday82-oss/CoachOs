@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Plus, CreditCard, TrendingUp, Users, Calendar } from 'lucide-react';
 
 interface Paiement {
@@ -8,6 +8,32 @@ interface Paiement {
   date: string;
   statut: 'paye' | 'en_attente' | 'retard';
   type: 'abonnement' | 'seance' | 'programme';
+}
+
+function getStatutColor(statut: string) {
+  switch (statut) {
+    case 'paye':
+      return 'bg-emerald-100 text-emerald-700';
+    case 'en_attente':
+      return 'bg-amber-100 text-amber-700';
+    case 'retard':
+      return 'bg-red-100 text-red-700';
+    default:
+      return 'bg-gray-100 text-gray-700';
+  }
+}
+
+function getTypeLabel(type: string) {
+  switch (type) {
+    case 'abonnement':
+      return 'Abonnement';
+    case 'seance':
+      return 'Séance';
+    case 'programme':
+      return 'Programme';
+    default:
+      return type;
+  }
 }
 
 function Paiements() {
@@ -38,35 +64,10 @@ function Paiements() {
     },
   ]);
 
-  const totalMois = paiements
-    .filter((p) => p.statut === 'paye')
-    .reduce((acc, p) => acc + p.montant, 0);
-
-  const getStatutColor = (statut: string) => {
-    switch (statut) {
-      case 'paye':
-        return 'bg-emerald-100 text-emerald-700';
-      case 'en_attente':
-        return 'bg-amber-100 text-amber-700';
-      case 'retard':
-        return 'bg-red-100 text-red-700';
-      default:
-        return 'bg-gray-100 text-gray-700';
-    }
-  };
-
-  const getTypeLabel = (type: string) => {
-    switch (type) {
-      case 'abonnement':
-        return 'Abonnement';
-      case 'seance':
-        return 'Séance';
-      case 'programme':
-        return 'Programme';
-      default:
-        return type;
-    }
-  };
+  const totalMois = useMemo(
+    () => paiements.filter((p) => p.statut === 'paye').reduce((acc, p) => acc + p.montant, 0),
+    [paiements]
+  );
 
   return (
     <div className="p-8">

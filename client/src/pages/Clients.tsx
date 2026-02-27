@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Plus, Search, Phone, Mail, MoreVertical, Loader2 } from 'lucide-react';
 import { supabase, type Client } from '../lib/supabase';
 
@@ -29,9 +29,14 @@ function Clients() {
     }
   }
 
-  const filteredClients = clients.filter(client =>
-    `${client.prenom} ${client.nom}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (client.email?.toLowerCase() || '').includes(searchTerm.toLowerCase())
+  const filteredClients = useMemo(
+    () =>
+      clients.filter(
+        (client) =>
+          `${client.prenom} ${client.nom}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (client.email?.toLowerCase() || '').includes(searchTerm.toLowerCase())
+      ),
+    [clients, searchTerm]
   );
 
   if (loading) {

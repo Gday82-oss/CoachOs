@@ -25,6 +25,15 @@ import Programmes from './pages/Programmes';
 import Paiements from './pages/Paiements';
 import SettingsPage from './pages/Settings';
 
+const navItems = [
+  { path: '/', icon: Users, label: 'Dashboard' },
+  { path: '/clients', icon: Users, label: 'Clients' },
+  { path: '/seances', icon: Calendar, label: 'Séances' },
+  { path: '/programmes', icon: Dumbbell, label: 'Programmes' },
+  { path: '/paiements', icon: CreditCard, label: 'Paiements' },
+  { path: '/settings', icon: Settings, label: 'Paramètres' },
+];
+
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [user, setUser] = useState<any>(null);
@@ -68,15 +77,6 @@ function App() {
       </Routes>
     );
   }
-
-  const navItems = [
-    { path: '/', icon: Users, label: 'Dashboard' },
-    { path: '/clients', icon: Users, label: 'Clients' },
-    { path: '/seances', icon: Calendar, label: 'Séances' },
-    { path: '/programmes', icon: Dumbbell, label: 'Programmes' },
-    { path: '/paiements', icon: CreditCard, label: 'Paiements' },
-    { path: '/settings', icon: Settings, label: 'Paramètres' },
-  ];
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-300">

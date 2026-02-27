@@ -11,6 +11,19 @@ interface Seance {
   statut: 'planifiee' | 'terminee' | 'annulee';
 }
 
+function getStatutColor(statut: string) {
+  switch (statut) {
+    case 'planifiee':
+      return 'bg-blue-100 text-blue-700';
+    case 'terminee':
+      return 'bg-emerald-100 text-emerald-700';
+    case 'annulee':
+      return 'bg-red-100 text-red-700';
+    default:
+      return 'bg-gray-100 text-gray-700';
+  }
+}
+
 function Seances() {
   const [seances] = useState<Seance[]>([
     {
@@ -41,19 +54,6 @@ function Seances() {
       statut: 'terminee',
     },
   ]);
-
-  const getStatutColor = (statut: string) => {
-    switch (statut) {
-      case 'planifiee':
-        return 'bg-blue-100 text-blue-700';
-      case 'terminee':
-        return 'bg-emerald-100 text-emerald-700';
-      case 'annulee':
-        return 'bg-red-100 text-red-700';
-      default:
-        return 'bg-gray-100 text-gray-700';
-    }
-  };
 
   return (
     <div className="p-8">
