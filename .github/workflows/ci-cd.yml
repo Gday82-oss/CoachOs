@@ -94,10 +94,16 @@ jobs:
         run: npm install -g vercel
       
       - name: Deploy to Vercel
-        run: cd client && vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::warning::VERCEL_TOKEN not configured, skipping Vercel deployment"
+            exit 0
+          fi
+          cd client && vercel deploy --prod --yes --token="$VERCEL_TOKEN"
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
   # Job 4: Deploy to VPS (Backend) - Only on main
   deploy-backend:
@@ -108,7 +114,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: Check VPS credentials
+        id: check_vps
+        run: |
+          if [ -n "$VPS_HOST" ]; then
+            echo "configured=true" >> $GITHUB_OUTPUT
+          else
+            echo "configured=false" >> $GITHUB_OUTPUT
+            echo "::warning::VPS_HOST not configured, skipping VPS deployment"
+          fi
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+      
       - name: Deploy to VPS
+        if: steps.check_vps.outputs.configured == 'true'
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.VPS_HOST }}
