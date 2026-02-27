@@ -1,4 +1,4 @@
-# ✅ CoachOS - Checklist & To-Do List
+# ✅ MyCareCoach - Checklist & To-Do List
 
 ## 📋 CHECKLIST GÉNÉRALE
 

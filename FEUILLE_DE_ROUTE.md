@@ -1,7 +1,7 @@
-# 🗺️ CoachOS - Feuille de Route SaaS
+# 🗺️ MyCareCoach - Feuille de Route SaaS
 
 ## Vision
-**CoachOS** : Le système d'exploitation des coachs sportifs - SaaS monétisable pour gérer clients, séances et programmes.
+**MyCareCoach** : Le système d'exploitation des coachs sportifs - SaaS monétisable pour gérer clients, séances et programmes.
 
 ---
 

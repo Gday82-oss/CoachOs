@@ -1,13 +1,13 @@
-# 🎯 Objectif CoachOS SaaS
+# 🎯 Objectif MyCareCoach SaaS
 # Configuration collaborative Kimi-Claw + Obi-Code-Bot
 
-objectif: "Créer CoachOS en SaaS monétisable pour coachs sportifs"
+objectif: "Créer MyCareCoach en SaaS monétisable pour coachs sportifs"
 
 # Phases du projet
 phases:
   A:
     nom: "Architecture Scalable"
-    description: "Préparer CoachOS pour supporter 1000+ utilisateurs"
+    description: "Préparer MyCareCoach pour supporter 1000+ utilisateurs"
     priorite: "🔴 Critique"
     
   B:
@@ -45,7 +45,7 @@ roles:
 # Points de contact
 communication:
   telegram_groupe: "https://t.me/+WAA4VYnx0w81YTBk"
-  github_repo: "Gday82-oss/CoachOs"
+  github_repo: "Gday82-oss/MyCareCoach"
   vercel_url: "https://coach-os-khaki.vercel.app"
 
 # Métriques de succès
