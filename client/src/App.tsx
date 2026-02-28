@@ -99,9 +99,12 @@ function App() {
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center">
                   <Heart className="text-white" size={18} />
                 </div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-500 to-blue-500 bg-clip-text text-transparent">
-                  MyCareCoach
-                </h1>
+                <div className="flex flex-col">
+                  <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-500 to-blue-500 bg-clip-text text-transparent">
+                    MyCareCoach
+                  </h1>
+                  <span className="text-xs text-emerald-600 font-medium">Votre santé en mouvement</span>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
