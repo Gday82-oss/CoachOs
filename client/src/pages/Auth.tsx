@@ -158,7 +158,10 @@ export default function Auth() {
           </button>
         </div>
 
-        <p className="mt-8 text-xs text-center text-gray-500">
+        <p className="mt-2 text-sm font-medium text-center text-emerald-600">
+          Votre santé en mouvement
+        </p>
+        <p className="mt-4 text-xs text-center text-gray-500">
           Sport-santé sur ordonnance • Remboursé par mutuelle
         </p>
       </div>
