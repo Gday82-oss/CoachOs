@@ -1,238 +1,327 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
+import { 
+  Users, 
+  Calendar, 
+  TrendingUp, 
+  Plus,
+  Activity,
+  Clock,
+  Heart
+} from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Users, Calendar, TrendingUp, DollarSign, Activity, Flame } from 'lucide-react';
-import { AnimatedCard, FadeIn, AnimatedNumber } from '../components/animations';
-import { useTheme } from '../contexts/ThemeContext';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 
-const revenueData = [
-  { name: 'Lun', value: 120 },
-  { name: 'Mar', value: 200 },
-  { name: 'Mer', value: 150 },
-  { name: 'Jeu', value: 280 },
-  { name: 'Ven', value: 220 },
-  { name: 'Sam', value: 350 },
-  { name: 'Dim', value: 180 },
-];
-
-const activityData = [
-  { name: 'Sem 1', seances: 12, clients: 8 },
-  { name: 'Sem 2', seances: 18, clients: 10 },
-  { name: 'Sem 3', seances: 15, clients: 12 },
-  { name: 'Sem 4', seances: 22, clients: 15 },
-];
-
-function StatCard({ icon: Icon, label, value, color, trend }: { 
-  icon: any; 
-  label: string; 
-  value: number; 
-  color: string;
-  trend?: string;
-}) {
-  
-  return (
-    <AnimatedCard className="p-6 relative overflow-hidden">
-      <div className={`absolute top-0 right-0 w-32 h-32 ${color} opacity-10 rounded-full -mr-16 -mt-16 blur-2xl`} />
-      <div className="flex items-start justify-between relative z-10">
-        <div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{label}</p>
-          <h3 className="text-3xl font-bold text-gray-800 dark:text-white">
-            <AnimatedNumber value={value} />
-          </h3>
-          {trend && (
-            <motion.span 
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="text-sm text-emerald-500 font-medium"
-            >
-              +{trend}%
-            </motion.span>
-          )}
-        </div>
-        <motion.div 
-          whileHover={{ rotate: 10, scale: 1.1 }}
-          className={`${color} p-3 rounded-xl`}
-        >
-          <Icon className="text-white" size={24} />
-        </motion.div>
-      </div>
-    </AnimatedCard>
-  );
+interface Stats {
+  totalClients: number;
+  seancesAujourdhui: number;
+  seancesCetteSemaine: number;
+  nouveauxClientsMois: number;
 }
 
-function Dashboard() {
-  const { theme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+interface Client {
+  id: string;
+  nom: string;
+  prenom: string;
+  email: string;
+  created_at: string;
+}
+
+interface Seance {
+  id: string;
+  date: string;
+  heure: string;
+  client_id: string;
+  type: string;
+  fait: boolean;
+}
+
+export default function Dashboard() {
+  const [stats, setStats] = useState<Stats>({
+    totalClients: 0,
+    seancesAujourdhui: 0,
+    seancesCetteSemaine: 0,
+    nouveauxClientsMois: 0
+  });
+  const [clientsRecents, setClientsRecents] = useState<Client[]>([]);
+  const [seancesAujourdhui, setSeancesAujourdhui] = useState<Seance[]>([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    setMounted(true);
+    fetchDashboardData();
   }, []);
 
-  const prochainesSeances = [
-    { client: 'Marie Dupont', heure: '09:00', type: 'Musculation', avatar: 'MD' },
-    { client: 'Jean Martin', heure: '10:30', type: 'Cardio', avatar: 'JM' },
-    { client: 'Sophie Bernard', heure: '14:00', type: 'Yoga', avatar: 'SB' },
-    { client: 'Pierre Durand', heure: '16:30', type: 'Musculation', avatar: 'PD' },
-  ];
+  async function fetchDashboardData() {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Stats clients
+      const { count: totalClients } = await supabase
+        .from('clients')
+        .select('*', { count: 'exact', head: true })
+        .eq('coach_id', user.id);
+
+      // Clients récents
+      const { data: recentClients } = await supabase
+        .from('clients')
+        .select('*')
+        .eq('coach_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      // Séances du jour
+      const aujourdhui = new Date().toISOString().split('T')[0];
+      const { data: seances } = await supabase
+        .from('seances')
+        .select('*')
+        .eq('coach_id', user.id)
+        .eq('date', aujourdhui)
+        .order('heure', { ascending: true });
+
+      // Séances cette semaine
+      const debutSemaine = new Date();
+      debutSemaine.setDate(debutSemaine.getDate() - debutSemaine.getDay());
+      const finSemaine = new Date(debutSemaine);
+      finSemaine.setDate(finSemaine.getDate() + 6);
+
+      const { count: seancesSemaine } = await supabase
+        .from('seances')
+        .select('*', { count: 'exact', head: true })
+        .eq('coach_id', user.id)
+        .gte('date', debutSemaine.toISOString().split('T')[0])
+        .lte('date', finSemaine.toISOString().split('T')[0]);
+
+      // Nouveaux clients ce mois
+      const debutMois = new Date();
+      debutMois.setDate(1);
+      const { count: nouveauxClients } = await supabase
+        .from('clients')
+        .select('*', { count: 'exact', head: true })
+        .eq('coach_id', user.id)
+        .gte('created_at', debutMois.toISOString());
+
+      setStats({
+        totalClients: totalClients || 0,
+        seancesAujourdhui: seances?.length || 0,
+        seancesCetteSemaine: seancesSemaine || 0,
+        nouveauxClientsMois: nouveauxClients || 0
+      });
+
+      setClientsRecents(recentClients || []);
+      setSeancesAujourdhui(seances || []);
+    } catch (error) {
+      console.error('Erreur dashboard:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-8 bg-gray-50 dark:bg-slate-900 min-h-screen transition-colors duration-300">
-      <FadeIn>
-        <header className="mb-8 flex items-center justify-between">
-          <div>
-            <motion.h1 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="text-4xl font-bold bg-gradient-to-r from-emerald-500 to-blue-500 bg-clip-text text-transparent"
-            >
-              Dashboard
-            </motion.h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">Vue d'ensemble de ton activité</p>
-          </div>
-          <div className="flex items-center gap-4">
-            <motion.div 
-              whileHover={{ scale: 1.05 }}
-              className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-full shadow-sm"
-            >
-              <Flame className="text-orange-500" size={20} />
-              <span className="text-sm font-medium">12 jours de streak !</span>
-            </motion.div>
-          </div>
-        </header>
-      </FadeIn>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatCard icon={Users} label="Clients actifs" value={24} color="bg-blue-500" trend="12" />
-        <StatCard icon={Calendar} label="Séances ce mois" value={48} color="bg-emerald-500" trend="8" />
-        <StatCard icon={TrendingUp} label="Progression" value={12} color="bg-purple-500" trend="5" />
-        <StatCard icon={DollarSign} label="Revenus (€)" value={2400} color="bg-amber-500" trend="15" />
+    <div className="p-8">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
+        <p className="text-gray-600 mt-1">Votre santé en mouvement</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Graphique Revenus */}
-        <AnimatedCard className="lg:col-span-2 p-6" delay={0.2}>
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Revenus de la semaine</h3>
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <Activity size={16} />
-              <span>+23% vs semaine dernière</span>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-xl shadow-sm p-6 border border-gray-100"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-500">Total clients</p>
+              <p className="text-3xl font-bold text-gray-800">{stats.totalClients}</p>
+            </div>
+            <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+              <Users className="text-emerald-600" size={24} />
             </div>
           </div>
-          <div className="h-64">
-            {mounted && (
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={revenueData}>
-                  <defs>
-                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? '#334155' : '#e5e7eb'} />
-                  <XAxis dataKey="name" stroke={theme === 'dark' ? '#94a3b8' : '#6b7280'} />
-                  <YAxis stroke={theme === 'dark' ? '#94a3b8' : '#6b7280'} />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: theme === 'dark' ? '#1e293b' : '#fff',
-                      border: 'none',
-                      borderRadius: '8px',
-                      boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
-                    }}
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="value" 
-                    stroke="#10b981" 
-                    strokeWidth={3}
-                    fillOpacity={1} 
-                    fill="url(#colorValue)" 
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-white rounded-xl shadow-sm p-6 border border-gray-100"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-500">Séances aujourd'hui</p>
+              <p className="text-3xl font-bold text-gray-800">{stats.seancesAujourdhui}</p>
+            </div>
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+              <Calendar className="text-blue-600" size={24} />
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-white rounded-xl shadow-sm p-6 border border-gray-100"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-500">Cette semaine</p>
+              <p className="text-3xl font-bold text-gray-800">{stats.seancesCetteSemaine}</p>
+            </div>
+            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+              <Activity className="text-purple-600" size={24} />
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="bg-white rounded-xl shadow-sm p-6 border border-gray-100"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-500">Nouveaux ce mois</p>
+              <p className="text-3xl font-bold text-gray-800">{stats.nouveauxClientsMois}</p>
+            </div>
+            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+              <TrendingUp className="text-orange-600" size={24} />
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Séances du jour */}
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="bg-white rounded-xl shadow-sm border border-gray-100"
+        >
+          <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <Clock size={20} className="text-emerald-500" />
+              Séances d'aujourd'hui
+            </h2>
+            <button 
+              onClick={() => navigate('/seances')}
+              className="text-sm text-emerald-600 hover:text-emerald-700"
+            >
+              Voir tout
+            </button>
+          </div>
+          <div className="p-6">
+            {seancesAujourdhui.length === 0 ? (
+              <p className="text-gray-500 text-center py-4">Aucune séance aujourd'hui</p>
+            ) : (
+              <div className="space-y-3">
+                {seancesAujourdhui.map((seance) => (
+                  <div key={seance.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-2 h-2 rounded-full ${seance.fait ? 'bg-green-500' : 'bg-yellow-500'}`} />
+                      <div>
+                        <p className="font-medium text-gray-800">{seance.heure.slice(0, 5)}</p>
+                        <p className="text-sm text-gray-500 capitalize">{seance.type}</p>
+                      </div>
+                    </div>
+                    <span className={`text-xs px-2 py-1 rounded-full ${seance.fait ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                      {seance.fait ? 'Fait' : 'À venir'}
+                    </span>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
-        </AnimatedCard>
+        </motion.div>
 
-        {/* Prochaines séances */}
-        <AnimatedCard className="p-6" delay={0.3}>
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Prochaines séances</h3>
-            <motion.button 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="text-emerald-500 text-sm font-medium"
+        {/* Clients récents */}
+        <motion.div 
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="bg-white rounded-xl shadow-sm border border-gray-100"
+        >
+          <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <Heart size={20} className="text-emerald-500" />
+              Clients récents
+            </h2>
+            <button 
+              onClick={() => navigate('/clients')}
+              className="text-sm text-emerald-600 hover:text-emerald-700"
             >
-              Voir tout →
-            </motion.button>
+              Voir tout
+            </button>
           </div>
-          <div className="space-y-4">
-            {prochainesSeances.map((seance, index) => (
-              <motion.div 
-                key={index}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 + index * 0.1 }}
-                whileHover={{ x: 5, backgroundColor: theme === 'dark' ? '#334155' : '#f3f4f6' }}
-                className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 dark:bg-slate-700/50 transition-colors cursor-pointer"
-              >
-                <motion.div 
-                  whileHover={{ rotate: 10 }}
-                  className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center text-white font-bold text-sm"
+          <div className="p-6">
+            {clientsRecents.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-gray-500 mb-4">Aucun client encore</p>
+                <button 
+                  onClick={() => navigate('/clients')}
+                  className="inline-flex items-center gap-2 bg-emerald-500 text-white px-4 py-2 rounded-lg hover:bg-emerald-600 transition-colors"
                 >
-                  {seance.avatar}
-                </motion.div>
-                <div className="flex-1">
-                  <p className="font-medium text-gray-800 dark:text-white">{seance.client}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{seance.type}</p>
-                </div>
-                <span className="text-emerald-500 font-semibold bg-emerald-50 dark:bg-emerald-500/20 px-3 py-1 rounded-full text-sm">
-                  {seance.heure}
-                </span>
-              </motion.div>
-            ))}
+                  <Plus size={18} />
+                  Ajouter un client
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {clientsRecents.map((client) => (
+                  <div key={client.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                    onClick={() => navigate('/clients')}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-blue-500 rounded-full flex items-center justify-center text-white font-medium">
+                        {client.prenom[0]}{client.nom[0]}
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-800">{client.prenom} {client.nom}</p>
+                        <p className="text-sm text-gray-500">{client.email}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        </AnimatedCard>
+        </motion.div>
       </div>
 
-      {/* Graphique Activité */}
-      <AnimatedCard className="mt-8 p-6" delay={0.4}>
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Activité mensuelle</h3>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-emerald-500" />
-              <span className="text-sm text-gray-500">Séances</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-blue-500" />
-              <span className="text-sm text-gray-500">Nouveaux clients</span>
-            </div>
-          </div>
-        </div>
-        <div className="h-64">
-          {mounted && (
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={activityData}>
-                <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? '#334155' : '#e5e7eb'} />
-                <XAxis dataKey="name" stroke={theme === 'dark' ? '#94a3b8' : '#6b7280'} />
-                <YAxis stroke={theme === 'dark' ? '#94a3b8' : '#6b7280'} />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: theme === 'dark' ? '#1e293b' : '#fff',
-                    border: 'none',
-                    borderRadius: '8px'
-                  }}
-                />
-                <Bar dataKey="seances" fill="#10b981" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="clients" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          )}
-        </div>
-      </AnimatedCard>
+      {/* Bouton ajout rapide */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="mt-8 flex gap-4"
+      >
+        <button 
+          onClick={() => navigate('/clients')}
+          className="flex items-center gap-2 bg-emerald-500 text-white px-6 py-3 rounded-xl hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-500/25"
+        >
+          <Plus size={20} />
+          Nouveau client
+        </button>
+        <button 
+          onClick={() => navigate('/seances')}
+          className="flex items-center gap-2 bg-white text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-50 transition-colors border border-gray-200"
+        >
+          <Calendar size={20} />
+          Planifier séance
+        </button>
+      </motion.div>
     </div>
   );
 }
-
-export default Dashboard;
