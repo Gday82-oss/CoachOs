@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Heart, UserPlus, LogIn } from 'lucide-react';
+import ForgotPassword from './ForgotPassword';
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [nom, setNom] = useState('');
@@ -49,6 +51,10 @@ export default function Auth() {
       setLoading(false);
     }
   };
+
+  if (showForgotPassword) {
+    return <ForgotPassword onBack={() => setShowForgotPassword(false)} />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-blue-50 flex items-center justify-center p-4">
@@ -124,6 +130,15 @@ export default function Auth() {
               required
               minLength={6}
             />
+            {isLogin && (
+              <button
+                type="button"
+                onClick={() => setShowForgotPassword(true)}
+                className="text-sm text-emerald-600 hover:text-emerald-700 mt-1"
+              >
+                Mot de passe oublié ?
+              </button>
+            )}
           </div>
 
           <button

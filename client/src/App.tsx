@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { supabase } from './lib/supabase';
 import Auth from './pages/Auth';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import CoachApp from './CoachApp';
 import ClientPortal from './pages/ClientPortal';
 
@@ -87,6 +89,8 @@ function App() {
     return (
       <Routes>
         <Route path="/auth" element={<Auth />} />
+        <Route path="/forgot-password" element={<ForgotPassword onBack={() => window.location.href = '/auth'} />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="*" element={<Navigate to="/auth" replace />} />
       </Routes>
     );
