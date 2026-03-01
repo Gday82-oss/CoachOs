@@ -53,7 +53,7 @@ export default function Programmes() {
       }
 
       const { data: programmesData } = await query;
-      const { data: clientsData } = await supabase.from('clients').select('id, prenom, nom').eq('coach_id', user.id);
+      const { data: clientsData } = await supabase.from('clients_coach').select('id, prenom, nom').eq('coach_id', user.id);
 
       setProgrammes(programmesData || []);
       setClients(clientsData || []);

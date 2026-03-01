@@ -59,13 +59,13 @@ export default function Dashboard() {
 
       // Stats clients
       const { count: totalClients } = await supabase
-        .from('clients')
+        .from('clients_coach')
         .select('*', { count: 'exact', head: true })
         .eq('coach_id', user.id);
 
       // Clients récents
       const { data: recentClients } = await supabase
-        .from('clients')
+        .from('clients_coach')
         .select('*')
         .eq('coach_id', user.id)
         .order('created_at', { ascending: false })
@@ -97,7 +97,7 @@ export default function Dashboard() {
       const debutMois = new Date();
       debutMois.setDate(1);
       const { count: nouveauxClients } = await supabase
-        .from('clients')
+        .from('clients_coach')
         .select('*', { count: 'exact', head: true })
         .eq('coach_id', user.id)
         .gte('created_at', debutMois.toISOString());

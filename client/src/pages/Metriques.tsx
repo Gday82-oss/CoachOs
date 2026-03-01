@@ -44,7 +44,7 @@ export default function Metriques() {
       if (!user) return;
 
       const { data: clientsData } = await supabase
-        .from('clients')
+        .from('clients_coach')
         .select('id, prenom, nom')
         .eq('coach_id', user.id);
 

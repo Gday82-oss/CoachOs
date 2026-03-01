@@ -45,7 +45,7 @@ export default function Attestations() {
         .order('date_emission', { ascending: false });
 
       const { data: clientsData } = await supabase
-        .from('clients')
+        .from('clients_coach')
         .select('id, prenom, nom')
         .eq('coach_id', user.id);
 
