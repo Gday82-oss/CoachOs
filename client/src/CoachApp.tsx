@@ -7,6 +7,7 @@ import {
   Dumbbell, 
   FileText,
   Activity,
+  Mail,
   Settings,
   Menu,
   X,
@@ -25,6 +26,7 @@ import Seances from './pages/Seances';
 import Programmes from './pages/Programmes';
 import Metriques from './pages/Metriques';
 import Attestations from './pages/Attestations';
+import EmailReminders from './pages/EmailReminders';
 import SettingsPage from './pages/Settings';
 
 const navItems = [
@@ -34,6 +36,7 @@ const navItems = [
   { path: '/programmes', icon: Dumbbell, label: 'Programmes' },
   { path: '/metriques', icon: Activity, label: 'Métriques' },
   { path: '/attestations', icon: FileText, label: 'Attestations' },
+  { path: '/emails', icon: Mail, label: 'Emails' },
   { path: '/settings', icon: Settings, label: 'Paramètres' },
 ];
 
@@ -222,6 +225,7 @@ export default function CoachApp() {
             <Route path="/programmes" element={<Programmes />} />
             <Route path="/metriques" element={<Metriques />} />
             <Route path="/attestations" element={<Attestations />} />
+            <Route path="/emails" element={<EmailReminders />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         </div>
