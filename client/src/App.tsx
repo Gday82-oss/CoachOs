@@ -56,7 +56,7 @@ function App() {
 
       // Vérifier si c'est un client
       const { data: clientData } = await supabase
-        .from('clients')
+        .from('clients_coach')
         .select('id')
         .eq('email', email)
         .single();

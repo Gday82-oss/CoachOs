@@ -7,7 +7,7 @@
 -- DROP TABLE IF EXISTS metriques CASCADE;
 -- DROP TABLE IF EXISTS programmes CASCADE;
 -- DROP TABLE IF EXISTS seances CASCADE;
--- DROP TABLE IF EXISTS clients CASCADE;
+-- DROP TABLE IF EXISTS clients_coach CASCADE;
 -- DROP TABLE IF EXISTS coachs CASCADE;
 
 -- ============================================ -- TABLE COACHS (profils des coachs)
@@ -23,7 +23,7 @@
 );
 
 -- ============================================ -- TABLE CLIENTS
--- ============================================ CREATE TABLE IF NOT EXISTS clients (
+-- ============================================ CREATE TABLE IF NOT EXISTS clients_coach (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   coach_id UUID REFERENCES coachs(id) ON DELETE CASCADE,
   nom TEXT NOT NULL,
@@ -45,7 +45,7 @@
 -- ============================================ CREATE TABLE IF NOT EXISTS seances (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   coach_id UUID REFERENCES coachs(id) ON DELETE CASCADE,
-  client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+  client_id UUID REFERENCES clients_coach(id) ON DELETE CASCADE,
   date DATE NOT NULL,
   heure TIME NOT NULL,
   duree INTEGER DEFAULT 60,
@@ -60,7 +60,7 @@
 -- ============================================ CREATE TABLE IF NOT EXISTS programmes (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   coach_id UUID REFERENCES coachs(id) ON DELETE CASCADE,
-  client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+  client_id UUID REFERENCES clients_coach(id) ON DELETE CASCADE,
   titre TEXT NOT NULL,
   contenu TEXT NOT NULL,
   duree_semaines INTEGER DEFAULT 4,
@@ -73,7 +73,7 @@
 -- ============================================ -- TABLE METRIQUES (suivi progression)
 -- ============================================ CREATE TABLE IF NOT EXISTS metriques (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+  client_id UUID REFERENCES clients_coach(id) ON DELETE CASCADE,
   date DATE DEFAULT CURRENT_DATE,
   poids NUMERIC(5,2),
   tension_sys INTEGER,
@@ -92,7 +92,7 @@
 -- ============================================ CREATE TABLE IF NOT EXISTS attestations (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   coach_id UUID REFERENCES coachs(id) ON DELETE CASCADE,
-  client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+  client_id UUID REFERENCES clients_coach(id) ON DELETE CASCADE,
   mois INTEGER NOT NULL,
   annee INTEGER NOT NULL,
   nombre_seances INTEGER NOT NULL,
@@ -107,7 +107,7 @@
 
 -- Activer RLS sur toutes les tables
 ALTER TABLE coachs ENABLE ROW LEVEL SECURITY;
-ALTER TABLE clients ENABLE ROW LEVEL SECURITY;
+ALTER TABLE clients_coach ENABLE ROW LEVEL SECURITY;
 ALTER TABLE seances ENABLE ROW LEVEL SECURITY;
 ALTER TABLE programmes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE metriques ENABLE ROW LEVEL SECURITY;
@@ -115,7 +115,7 @@ ALTER TABLE attestations ENABLE ROW LEVEL SECURITY;
 
 -- Supprimer les anciennes politiques si elles existent
 DROP POLICY IF EXISTS "Coachs voient leur profil" ON coachs;
-DROP POLICY IF EXISTS "Coachs voient leurs clients" ON clients;
+DROP POLICY IF EXISTS "Coachs voient leurs clients" ON clients_coach;
 DROP POLICY IF EXISTS "Coachs voient leurs séances" ON seances;
 DROP POLICY IF EXISTS "Coachs voient leurs programmes" ON programmes;
 DROP POLICY IF EXISTS "Coachs voient leurs métriques" ON metriques;
@@ -125,7 +125,7 @@ DROP POLICY IF EXISTS "Coachs voient leurs attestations" ON attestations;
 CREATE POLICY "Coachs voient leur profil" ON coachs
   FOR ALL USING (auth.uid() = id);
 
-CREATE POLICY "Coachs voient leurs clients" ON clients
+CREATE POLICY "Coachs voient leurs clients" ON clients_coach
   FOR ALL USING (auth.uid() = coach_id);
 
 CREATE POLICY "Coachs voient leurs séances" ON seances
@@ -136,7 +136,7 @@ CREATE POLICY "Coachs voient leurs programmes" ON programmes
 
 CREATE POLICY "Coachs voient leurs métriques" ON metriques
   FOR ALL USING (EXISTS (
-    SELECT 1 FROM clients WHERE clients.id = metriques.client_id AND clients.coach_id = auth.uid()
+    SELECT 1 FROM clients_coach WHERE clients_coach.id = metriques.client_id AND clients_coach.coach_id = auth.uid()
   ));
 
 CREATE POLICY "Coachs voient leurs attestations" ON attestations
@@ -154,9 +154,9 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
--- Trigger sur clients
-DROP TRIGGER IF EXISTS update_clients_updated_at ON clients;
+-- Trigger sur clients_coach
+DROP TRIGGER IF EXISTS update_clients_updated_at ON clients_coach;
 CREATE TRIGGER update_clients_updated_at
-  BEFORE UPDATE ON clients
+  BEFORE UPDATE ON clients_coach
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
