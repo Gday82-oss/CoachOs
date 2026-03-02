@@ -393,3 +393,12 @@ CREATE INDEX IF NOT EXISTS idx_programmes_coach_id ON programmes(coach_id);
 CREATE INDEX IF NOT EXISTS idx_programmes_client_id ON programmes(client_id);
 CREATE INDEX IF NOT EXISTS idx_metriques_client_id ON metriques(client_id);_client_id ON programmes(client_id);
 CREATE INDEX IF NOT EXISTS idx_metriques_client_id ON metriques(client_id);
+
+-- ============================================
+-- TRIGGER updated_at automatique
+-- (utilise la fonction update_updated_at_column() définie plus haut)
+-- ============================================
+DROP TRIGGER IF EXISTS update_clients_coach_updated_at ON clients_coach;
+CREATE TRIGGER update_clients_coach_updated_at
+  BEFORE UPDATE ON clients_coach
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
