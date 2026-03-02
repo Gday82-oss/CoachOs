@@ -45,7 +45,7 @@ export default function Seances() {
 
       const { data: seancesData } = await supabase
         .from('seances')
-        .select('*, client:clients(prenom, nom)')
+        .select('*, client:clients_coach(prenom, nom)')
         .eq('coach_id', user.id)
         .gte('date', debutMois)
         .lte('date', finMois)
