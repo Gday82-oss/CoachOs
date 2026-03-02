@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import type { User } from '@supabase/supabase-js';
 import { 
+  LayoutDashboard,
   Users, 
   Calendar, 
   Dumbbell, 
@@ -30,7 +32,7 @@ import EmailReminders from './pages/EmailReminders';
 import SettingsPage from './pages/Settings';
 
 const navItems = [
-  { path: '/', icon: Users, label: 'Dashboard' },
+  { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { path: '/clients', icon: Users, label: 'Clients' },
   { path: '/seances', icon: Calendar, label: 'Séances' },
   { path: '/programmes', icon: Dumbbell, label: 'Programmes' },
@@ -42,7 +44,7 @@ const navItems = [
 
 export default function CoachApp() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
