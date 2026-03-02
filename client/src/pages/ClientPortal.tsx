@@ -20,31 +20,43 @@ export default function ClientPortal() {
   const [client, setClient] = useState<ClientProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
     checkClientAccess();
+    
+    // Check if desktop on mount
+    const checkDesktop = () => setIsDesktop(window.innerWidth >= 1024);
+    checkDesktop();
+    
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
   }, []);
 
   async function checkClientAccess() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      if (!user?.email) {
         setLoading(false);
         return;
       }
 
-      // Vérifier si l'utilisateur est un client (a un email dans clients_coach)
-      const { data: clientData } = await supabase
-        .from('clients_coach')
+      // Vérifier si l'utilisateur est un client (par email)
+      const { data: clientData, error } = await supabase
+        .from('clients')
         .select('*')
         .eq('email', user.email)
-        .single();
+        .maybeSingle();
+
+      if (error) {
+        console.error('Erreur Supabase:', error);
+      }
 
       if (clientData) {
         setClient(clientData);
       }
     } catch (error) {
-      console.error('Erreur:', error);
+      console.error('Erreur checkClientAccess:', error);
     } finally {
       setLoading(false);
     }
@@ -74,6 +86,8 @@ export default function ClientPortal() {
     { path: '/client/metriques', icon: Activity, label: 'Mes métriques' },
   ];
 
+  const showSidebar = sidebarOpen || isDesktop;
+
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Mobile sidebar toggle */}
@@ -86,7 +100,7 @@ export default function ClientPortal() {
 
       {/* Sidebar */}
       <AnimatePresence>
-        {(sidebarOpen || window.innerWidth >= 1024) && (
+        {showSidebar && (
           <motion.aside
             initial={{ x: -300 }}
             animate={{ x: 0 }}

@@ -15,5 +15,16 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'recharts-vendor': ['recharts'],
+          'framer-vendor': ['framer-motion'],
+          'supabase-vendor': ['@supabase/supabase-js'],
+          'query-vendor': ['@tanstack/react-query'],
+        },
+      },
+    },
   },
 })

@@ -41,33 +41,33 @@ function App() {
 
   async function checkUserType(email: string) {
     try {
-      // Vérifier si c'est un coach
-      const { data: coachData } = await supabase
-        .from('coachs')
+      // Vérifier si c'est un client (priorité au client si email dans les deux)
+      const { data: clientData, error: clientError } = await supabase
+        .from('clients')
         .select('id')
         .eq('email', email)
-        .single();
+        .maybeSingle();
 
-      if (coachData) {
-        setUserType('coach');
-        setLoading(false);
-        return;
-      }
-
-      // Vérifier si c'est un client
-      const { data: clientData } = await supabase
-        .from('clients_coach')
-        .select('id')
-        .eq('email', email)
-        .single();
-
-      if (clientData) {
+      if (clientData && !clientError) {
         setUserType('client');
         setLoading(false);
         return;
       }
 
-      // Par défaut, considérer comme coach
+      // Vérifier si c'est un coach
+      const { data: coachData, error: coachError } = await supabase
+        .from('coachs')
+        .select('id')
+        .eq('email', email)
+        .maybeSingle();
+
+      if (coachData && !coachError) {
+        setUserType('coach');
+        setLoading(false);
+        return;
+      }
+
+      // Par défaut, considérer comme coach (nouveau utilisateur)
       setUserType('coach');
     } catch (error) {
       console.error('Erreur checkUserType:', error);

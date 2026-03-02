@@ -52,7 +52,7 @@ export default function Seances() {
         .order('date, heure');
 
       const { data: clientsData } = await supabase
-        .from('clients_coach')
+        .from('clients')
         .select('id, prenom, nom')
         .eq('coach_id', user.id);
 

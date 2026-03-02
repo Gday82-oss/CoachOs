@@ -50,3 +50,25 @@ export interface Coach {
   siret?: string;
   created_at: string;
 }
+
+export interface Facture {
+  id: string;
+  coach_id: string;
+  client_id: string;
+  numero: string;
+  date_emission: string;
+  date_echeance?: string;
+  montant_ht: number;
+  tva_percent: number;
+  montant_ttc: number;
+  description?: string;
+  statut: 'brouillon' | 'envoyee' | 'payee' | 'retard' | 'annulee';
+  mode_paiement?: 'cheque' | 'especes' | 'virement' | 'non_paye';
+  date_paiement?: string;
+  notes?: string;
+  created_at: string;
+  client?: {
+    nom: string;
+    prenom: string;
+  };
+}

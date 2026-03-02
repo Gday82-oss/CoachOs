@@ -40,7 +40,7 @@ export default function Clients() {
       if (!user) return;
 
       const { data, error } = await supabase
-        .from('clients_coach')
+        .from('clients')
         .select('*')
         .eq('coach_id', user.id)
         .order('created_at', { ascending: false });
@@ -59,7 +59,7 @@ export default function Clients() {
 
     try {
       const { error } = await supabase
-        .from('clients_coach')
+        .from('clients')
         .delete()
         .eq('id', clientId);
 
@@ -241,7 +241,7 @@ export default function Clients() {
                 const formData = new FormData(form);
 
                 const { error } = await supabase
-                  .from('clients_coach')
+                  .from('clients')
                   .insert([{
                     coach_id: user.id,
                     nom: formData.get('nom'),
