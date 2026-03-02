@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import type { User } from '@supabase/supabase-js';
 import { supabase } from './lib/supabase';
 import Auth from './pages/Auth';
 import ForgotPassword from './pages/ForgotPassword';
@@ -7,8 +8,13 @@ import ResetPassword from './pages/ResetPassword';
 import CoachApp from './CoachApp';
 import ClientPortal from './pages/ClientPortal';
 
+function ForgotPasswordWrapper() {
+  const navigate = useNavigate();
+  return <ForgotPassword onBack={() => navigate('/auth')} />;
+}
+
 function App() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [userType, setUserType] = useState<'coach' | 'client' | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -43,7 +49,7 @@ function App() {
     try {
       // Vérifier si c'est un client (priorité au client si email dans les deux)
       const { data: clientData, error: clientError } = await supabase
-        .from('clients')
+        .from('clients_coach')
         .select('id')
         .eq('email', email)
         .maybeSingle();
@@ -89,7 +95,7 @@ function App() {
     return (
       <Routes>
         <Route path="/auth" element={<Auth />} />
-        <Route path="/forgot-password" element={<ForgotPassword onBack={() => window.location.href = '/auth'} />} />
+        <Route path="/forgot-password" element={<ForgotPasswordWrapper />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="*" element={<Navigate to="/auth" replace />} />
       </Routes>
