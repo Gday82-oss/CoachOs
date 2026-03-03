@@ -1,0 +1,1 @@
+This pull request is obsolete because all its changes have been superseded: server stub and tsconfig by PR #1/v1.0.0, CI/CD Vercel fix by PR #9, SPA rewrites and .gitignore by subsequent merged PRs. The main branch is now 10+ commits ahead and merging this PR would cause conflicts.
