@@ -60,6 +60,8 @@ L'application sera accessible sur `http://localhost:5173`
 MyCareCoach/
 ├── 📁 client/          # Frontend React + Vite + Tailwind
 ├── 📁 server/          # Backend Node.js + Express
+├── 📁 shared/          # Types TypeScript partagés
+├── 📁 docs/            # Documentation complète
 ├── 📁 .github/         # Workflows CI/CD
 ├── 📄 supabase_schema.sql  # Schéma base de données
 └── 📄 deploy-prod.sh   # Script déploiement production
@@ -170,6 +172,21 @@ pm2 startup
 - [ ] Paiement en ligne (Stripe)
 - [ ] Chat intégré coach-client
 - [ ] Programme d'affiliation
+
+## 📚 Documentation
+
+La documentation complète est dans le dossier [`docs/`](docs/):
+
+| Document | Description |
+|----------|-------------|
+| [Architecture](docs/project-structure.md) | Structure et arborescence du projet |
+| [Roadmap](docs/roadmap.md) | Feuille de route et phases du projet |
+| [Supabase Setup](docs/supabase-setup.md) | Configuration de la base de données |
+| [Déploiement](docs/deployment.md) | Guide de déploiement VPS |
+| [Workflows](docs/workflows.md) | CI/CD et scripts d'automatisation |
+| [Authentification](docs/auth-setup.md) | Configuration et sécurité de l'auth |
+| [Facturation](docs/billing.md) | Système de facturation |
+| [Todo](docs/todo.md) | Checklist et tâches à réaliser |
 
 ## 🤝 Contribution
 
