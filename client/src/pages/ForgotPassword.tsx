@@ -27,7 +27,7 @@ export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
 
       setSent(true);
     } catch (err: any) {
-      setError(err.message || 'Une erreur est survenue');
+      setError('Une erreur est survenue. Veuillez réessayer.');
     } finally {
       setLoading(false);
     }

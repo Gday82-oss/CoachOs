@@ -15,10 +15,35 @@ export default function Auth() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  const getAuthErrorMessage = (message: string): string => {
+    if (message.includes('Invalid login credentials') || message.includes('invalid_credentials')) {
+      return 'Email ou mot de passe incorrect.';
+    }
+    if (message.includes('Email not confirmed')) {
+      return 'Veuillez confirmer votre adresse email avant de vous connecter.';
+    }
+    if (message.includes('User already registered') || message.includes('already been registered')) {
+      return 'Un compte existe déjà avec cet email.';
+    }
+    if (message.includes('Password should be at least')) {
+      return 'Le mot de passe doit contenir au moins 8 caractères.';
+    }
+    if (message.includes('rate limit') || message.includes('too many requests')) {
+      return 'Trop de tentatives. Veuillez patienter quelques minutes.';
+    }
+    return 'Une erreur est survenue. Veuillez réessayer.';
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    if (!isLogin && password.length < 8) {
+      setError('Le mot de passe doit contenir au moins 8 caractères.');
+      setLoading(false);
+      return;
+    }
 
     try {
       if (isLogin) {
@@ -46,7 +71,7 @@ export default function Auth() {
         setIsLogin(true);
       }
     } catch (err: any) {
-      setError(err.message);
+      setError(getAuthErrorMessage(err.message || ''));
     } finally {
       setLoading(false);
     }
@@ -115,6 +140,7 @@ export default function Auth() {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               required
+              autoComplete="email"
             />
           </div>
 
@@ -128,7 +154,8 @@ export default function Auth() {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               required
-              minLength={6}
+              minLength={8}
+              autoComplete={isLogin ? 'current-password' : 'new-password'}
             />
             {isLogin && (
               <button

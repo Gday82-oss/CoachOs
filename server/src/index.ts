@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import rateLimit from 'express-rate-limit';
 import type { Request, Response, NextFunction } from 'express';
 
 dotenv.config();
@@ -16,7 +17,29 @@ app.use(cors({
   origin: allowedOrigins,
   credentials: true,
 }));
-app.use(express.json());
+app.use(express.json({ limit: '10kb' }));
+
+// Rate limiting — global: 100 requests per 15 minutes per IP
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Trop de requêtes, veuillez réessayer plus tard.' },
+});
+
+// Stricter rate limiting for auth endpoints: 10 attempts per 15 minutes
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Trop de tentatives de connexion. Réessayez dans 15 minutes.' },
+});
+
+app.use(globalLimiter);
+// Apply strict limiter to any future /auth routes
+app.use('/auth', authLimiter);
 
 app.get('/', (req, res) => {
   res.json({ message: 'MyCareCoach API is running!' });
@@ -28,7 +51,11 @@ app.get('/health', (req, res) => {
 
 // Error handler (doit être le dernier middleware)
 app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
-  console.error(err.stack);
+  if (process.env.NODE_ENV !== 'production') {
+    console.error(err.stack);
+  } else {
+    console.error(`[${new Date().toISOString()}] Error: ${err.message}`);
+  }
   res.status(500).json({ error: 'Internal server error' });
 });
 
