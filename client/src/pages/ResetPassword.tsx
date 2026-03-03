@@ -31,8 +31,8 @@ export default function ResetPassword() {
       return;
     }
 
-    if (password.length < 6) {
-      setError('Le mot de passe doit contenir au moins 6 caractères');
+    if (password.length < 8) {
+      setError('Le mot de passe doit contenir au moins 8 caractères');
       return;
     }
 
@@ -52,7 +52,7 @@ export default function ResetPassword() {
         navigate('/auth');
       }, 3000);
     } catch (err: any) {
-      setError(err.message || 'Une erreur est survenue');
+      setError('Une erreur est survenue. Veuillez réessayer.');
     } finally {
       setLoading(false);
     }
@@ -100,9 +100,10 @@ export default function ResetPassword() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      minLength={6}
+                      minLength={8}
                       className="w-full pl-10 pr-12 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                       placeholder="••••••••"
+                      autoComplete="new-password"
                     />
                     <button
                       type="button"
@@ -112,7 +113,7 @@ export default function ResetPassword() {
                       {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Minimum 6 caractères</p>
+                  <p className="text-xs text-gray-500 mt-1">Minimum 8 caractères</p>
                 </div>
 
                 <div>
