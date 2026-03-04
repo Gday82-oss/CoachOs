@@ -1,16 +1,31 @@
 import { useState, useEffect } from 'react';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from './lib/supabase';
 import Auth from './pages/Auth';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import LandingPage from './pages/LandingPage';
 import CoachApp from './CoachApp';
 import ClientPortal from './pages/ClientPortal';
 
 function ForgotPasswordWrapper() {
   const navigate = useNavigate();
   return <ForgotPassword onBack={() => navigate('/auth')} />;
+}
+
+/** Redirect /app → / for authenticated coach users. */
+function CoachAppWithRedirect() {
+  const location = useLocation();
+  if (location.pathname === '/app') return <Navigate to="/" replace />;
+  return <CoachApp />;
+}
+
+/** Redirect /app → /client for authenticated client users. */
+function ClientPortalWithRedirect() {
+  const location = useLocation();
+  if (location.pathname === '/app') return <Navigate to="/client" replace />;
+  return <ClientPortal />;
 }
 
 function App() {
@@ -94,20 +109,22 @@ function App() {
   if (!user) {
     return (
       <Routes>
+        <Route path="/" element={<LandingPage />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/register" element={<Auth initialMode="register" />} />
         <Route path="/forgot-password" element={<ForgotPasswordWrapper />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="*" element={<Navigate to="/auth" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     );
   }
 
   // Redirection selon le type d'utilisateur
   if (userType === 'client') {
-    return <ClientPortal />;
+    return <ClientPortalWithRedirect />;
   }
 
-  return <CoachApp />;
+  return <CoachAppWithRedirect />;
 }
 
 export default App;
