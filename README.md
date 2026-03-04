@@ -1,36 +1,76 @@
-# 🏆 MyCareCoach
+# MyCareCoach
 
 > **Le système d'exploitation des coachs sportifs**
 
 [![CI/CD](https://github.com/Gday82-oss/MyCareCoach/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/Gday82-oss/MyCareCoach/actions)
+[![Live](https://img.shields.io/badge/live-mycarecoach.app-brightgreen)](https://mycarecoach.app)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## 🎯 Vision
+**Application en production : [https://mycarecoach.app](https://mycarecoach.app)**
 
-MyCareCoach est une application SaaS complète pour les coachs sportifs qui souhaitent professionnaliser leur activité. Gérez vos clients, planifiez vos séances, créez des programmes personnalisés et suivez vos paiements - tout en un seul endroit.
+---
 
-## ✨ Fonctionnalités
+## Vision
+
+MyCareCoach est une application SaaS complète pour les coachs sportifs qui souhaitent professionnaliser leur activité. Gérez vos clients, planifiez vos séances, créez des programmes personnalisés et suivez vos paiements — tout en un seul endroit.
+
+---
+
+## Fonctionnalités
 
 ### Pour les Coachs
-- 📊 **Dashboard** - Vue d'ensemble de votre activité
-- 👥 **Gestion Clients** - Fiches clients complètes avec historique
-- 📅 **Planification** - Calendrier des séances avec rappels
-- 💪 **Programmes** - Création et suivi des programmes d'entraînement
-- 📈 **Métriques** - Suivi des progrès de vos clients
-- 💰 **Facturation** - Gestion des paiements (chèque, espèces, virement)
-- 🧾 **Attestations** - Génération de documents pour mutuelles
+- **Dashboard** — Vue d'ensemble de votre activité
+- **Gestion Clients** — Fiches clients complètes avec historique
+- **Planification** — Calendrier des séances avec rappels
+- **Programmes** — Création et suivi des programmes d'entraînement
+- **Métriques** — Suivi des progrès de vos clients
+- **Facturation** — Gestion des paiements (chèque, espèces, virement)
+- **Attestations** — Génération de documents pour mutuelles
 
 ### Pour les Clients
-- 📱 **Espace Client** - Accès à leurs données personnelles
-- 📋 **Programmes** - Consultation de leurs programmes
-- 📊 **Suivi** - Visualisation de leur progression
-- 📅 **Séances** - Historique et prochaines séances
+- **Espace Client** — Accès à leurs données personnelles
+- **Programmes** — Consultation de leurs programmes
+- **Suivi** — Visualisation de leur progression
+- **Séances** — Historique et prochaines séances
 
-## 🚀 Démarrage Rapide
+---
+
+## Stack Technique
+
+| Couche | Technologie |
+|--------|-------------|
+| Frontend | React 19, TypeScript, Tailwind CSS, Vite |
+| Backend | Node.js, Express, TypeScript |
+| Base de données | PostgreSQL via Supabase |
+| Auth | Supabase Auth (JWT) |
+| Tests | Playwright (E2E) |
+| CI/CD | GitHub Actions |
+| Hébergement | VPS Hostinger (Ubuntu 24.04) |
+| Reverse proxy | Nginx + Let's Encrypt (SSL auto-renew) |
+| Process manager | PM2 |
+
+---
+
+## Architecture
+
+```
+MyCareCoach/
+├── client/              # Frontend React + Vite + Tailwind
+├── server/              # Backend Node.js + Express
+├── shared/              # Types TypeScript partagés
+├── docs/                # Documentation complète
+├── .github/workflows/   # Pipeline CI/CD GitHub Actions
+├── nginx.conf           # Config Nginx de référence
+└── supabase_schema.sql  # Schéma base de données
+```
+
+---
+
+## Démarrage en développement
 
 ### Prérequis
 - Node.js 20+
-- npm ou pnpm
+- npm
 - Compte Supabase (gratuit)
 
 ### Installation
@@ -40,170 +80,137 @@ MyCareCoach est une application SaaS complète pour les coachs sportifs qui souh
 git clone https://github.com/Gday82-oss/MyCareCoach.git
 cd MyCareCoach
 
-# 2. Lancer le setup automatique
-./setup.sh
+# 2. Installer les dépendances
+cd client && npm install
+cd ../server && npm install
 
-# 3. Configurer Supabase
-# - Créer un projet sur https://supabase.com
-# - Exécuter le script SQL : supabase_schema.sql
-# - Copier les clés dans client/.env et server/.env
+# 3. Configurer les variables d'environnement
+cp client/.env.example client/.env
+# Remplir VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY
 
-# 4. Lancer en développement
+# 4. Initialiser la base de données Supabase
+# Exécuter supabase_schema.sql dans l'éditeur SQL Supabase
+
+# 5. Lancer en développement (depuis la racine)
 npm run dev
 ```
 
-L'application sera accessible sur `http://localhost:5173`
+Frontend : `http://localhost:5173`
+API : `http://localhost:3000`
 
-## 🏗️ Architecture
+---
 
-```
-MyCareCoach/
-├── 📁 client/          # Frontend React + Vite + Tailwind
-├── 📁 server/          # Backend Node.js + Express
-├── 📁 shared/          # Types TypeScript partagés
-├── 📁 docs/            # Documentation complète
-├── 📁 .github/         # Workflows CI/CD
-├── 📄 supabase_schema.sql  # Schéma base de données
-└── 📄 deploy-prod.sh   # Script déploiement production
-```
+## Déploiement
 
-### Stack Technique
+### CI/CD automatique
 
-| Couche | Technologie |
+Chaque push sur `main` déclenche automatiquement le pipeline GitHub Actions :
+
+1. **Build** — TypeScript check + build frontend et backend
+2. **Deploy** — Upload sur VPS via SSH + rechargement PM2
+3. **Health check** — Vérification que `https://mycarecoach.app` répond 200
+
+Les tests E2E Playwright s'exécutent sur chaque Pull Request.
+
+### Secrets GitHub Actions requis
+
+| Secret | Description |
 |--------|-------------|
-| Frontend | React 19, TypeScript, Tailwind CSS, Vite |
-| Backend | Node.js, Express, TypeScript |
-| Base de données | PostgreSQL (Supabase) |
-| Auth | Supabase Auth (JWT) |
-| Tests | Playwright (E2E), Vitest (Unit) |
-| Déploiement | GitHub Actions, VPS Hostinger |
+| `VPS_HOST` | IP du serveur |
+| `VPS_SSH_KEY` | Clé SSH privée (sans passphrase) |
+| `VITE_SUPABASE_URL` | URL du projet Supabase |
+| `VITE_SUPABASE_ANON_KEY` | Clé anonyme Supabase |
 
-## 🧪 Tests
+### Infrastructure VPS
+
+- **Frontend** servi par Nginx depuis `/var/www/mycarecoach/dist`
+- **Backend** tournant via PM2 sur le port `3000`
+- **Nginx** proxifie `/api/` → `localhost:3000`
+- **SSL** Let's Encrypt avec renouvellement automatique
+
+---
+
+## Tests
 
 ```bash
-# Tests unitaires
-cd client && npm run test:unit
-cd server && npm test
+# Type check
+cd client && npx tsc --noEmit
 
-# Tests E2E
+# Tests E2E Playwright
 cd client && npx playwright test
 
-# Tests avec UI
+# Tests avec interface graphique
 cd client && npx playwright test --ui
 ```
 
-## 📦 Déploiement
+---
 
-### Production (Hostinger VPS)
+## API
 
-```bash
-# Déploiement complet
-./deploy-prod.sh
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/` | Statut de l'API |
+| `GET /api/health` | Health check |
 
-# Déploiement frontend uniquement
-./deploy-prod.sh frontend
+---
 
-# Déploiement backend uniquement
-./deploy-prod.sh backend
-```
+## Sécurité
 
-### Configuration VPS
+- Authentification JWT via Supabase Auth
+- Row Level Security (RLS) sur toutes les tables Supabase
+- HTTPS forcé, redirection automatique HTTP → HTTPS
+- Headers de sécurité Nginx (X-Frame-Options, X-Content-Type-Options…)
+- Rate limiting sur l'API (100 req/15min global, 10 req/15min sur `/auth`)
+- Validation des entrées avec Zod
 
-1. **Installer les dépendances système**
-```bash
-sudo apt update
-sudo apt install -y nginx certbot python3-certbot-nginx
-```
+---
 
-2. **Configurer Nginx**
-```bash
-sudo cp nginx.conf /etc/nginx/sites-available/mycarecoach
-sudo ln -s /etc/nginx/sites-available/mycarecoach /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl reload nginx
-```
+## Roadmap
 
-3. **SSL (Let's Encrypt)**
-```bash
-sudo certbot --nginx -d mycarecoach.app -d www.mycarecoach.app -d api.mycarecoach.app
-```
-
-4. **PM2 (process manager)**
-```bash
-npm install -g pm2
-pm2 startup
-```
-
-## 🔒 Sécurité
-
-- ✅ Authentification JWT sécurisée
-- ✅ Row Level Security (RLS) sur toutes les tables
-- ✅ HTTPS forcé en production
-- ✅ Headers de sécurité configurés
-- ✅ Validation des entrées (Zod)
-- ✅ Protection CSRF
-
-## 📊 Monitoring
-
-- **Health Check** : `GET /health`
-- **Logs** : PM2 logs
-- **Métriques** : À configurer selon besoins
-
-## 🛣️ Roadmap
-
-### V1.0 (Actuel)
+### V1.0 — Production (actuel)
 - [x] Authentification complète
 - [x] CRUD Clients
 - [x] Gestion Séances
 - [x] Programmes d'entraînement
 - [x] Suivi métriques
 - [x] Facturation
-- [x] Tests automatisés
+- [x] Tests E2E Playwright
+- [x] CI/CD GitHub Actions → VPS
+- [x] HTTPS Let's Encrypt
 
-### V2.0 (Prochainement)
+### V2.0 — Prochainement
+- [ ] Notifications push et rappels email
+- [ ] Export PDF (attestations, factures)
+- [ ] Dashboard analytics avancé
 - [ ] Application mobile (React Native)
-- [ ] Notifications push
-- [ ] Export PDF avancé
-- [ ] Dashboard analytics
+
+### V3.0 — Futur
+- [ ] Paiement en ligne (Stripe)
+- [ ] IA génération de programmes
+- [ ] Chat intégré coach-client
 - [ ] API publique
 
-### V3.0 (Futur)
-- [ ] IA génération programmes
-- [ ] Paiement en ligne (Stripe)
-- [ ] Chat intégré coach-client
-- [ ] Programme d'affiliation
+---
 
-## 📚 Documentation
-
-La documentation complète est dans le dossier [`docs/`](docs/):
+## Documentation
 
 | Document | Description |
 |----------|-------------|
-| [Architecture](docs/project-structure.md) | Structure et arborescence du projet |
-| [Roadmap](docs/roadmap.md) | Feuille de route et phases du projet |
-| [Supabase Setup](docs/supabase-setup.md) | Configuration de la base de données |
-| [Déploiement](docs/deployment.md) | Guide de déploiement VPS |
-| [Workflows](docs/workflows.md) | CI/CD et scripts d'automatisation |
-| [Authentification](docs/auth-setup.md) | Configuration et sécurité de l'auth |
+| [Architecture](docs/project-structure.md) | Structure du projet |
+| [Roadmap](docs/roadmap.md) | Feuille de route |
+| [Supabase Setup](docs/supabase-setup.md) | Configuration base de données |
+| [Déploiement](docs/deployment.md) | Guide déploiement VPS |
+| [Authentification](docs/auth-setup.md) | Sécurité et auth |
 | [Facturation](docs/billing.md) | Système de facturation |
-| [Todo](docs/todo.md) | Checklist et tâches à réaliser |
 
-## 🤝 Contribution
+---
 
-Les contributions sont les bienvenues ! Voir [CONTRIBUTING.md](CONTRIBUTING.md)
-
-## 📝 License
+## Licence
 
 [MIT](LICENSE)
-
-## 👥 Équipe
-
-- **Product Owner** : Guillaume (Gday)
-- **Architecture & Dev** : Kimi-Claw
-- **DevOps** : ObiCode-Bot
 
 ---
 
 <p align="center">
-  <strong>MyCareCoach</strong> - Votre santé en mouvement 🐢
+  <strong>MyCareCoach</strong> — Votre santé en mouvement
 </p>
