@@ -4,8 +4,12 @@ import { supabase } from '../lib/supabase';
 import { Heart, UserPlus, LogIn } from 'lucide-react';
 import ForgotPassword from './ForgotPassword';
 
-export default function Auth() {
-  const [isLogin, setIsLogin] = useState(true);
+interface AuthProps {
+  initialMode?: 'login' | 'register';
+}
+
+export default function Auth({ initialMode = 'login' }: AuthProps) {
+  const [isLogin, setIsLogin] = useState(initialMode === 'login');
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
