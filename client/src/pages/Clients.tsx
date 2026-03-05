@@ -39,6 +39,9 @@ export default function Clients() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // S'assure que le profil coach existe
+      await ensureCoachProfile(user);
+
       const { data, error } = await supabase
         .from('clients')
         .select('*')
@@ -236,33 +239,54 @@ export default function Clients() {
               e.preventDefault();
               try {
                 const { data: { user } } = await supabase.auth.getUser();
-                if (!user) return;
+                if (!user) {
+                  alert('Vous devez être connecté pour créer un client');
+                  return;
+                }
+
+                // S'assure que le profil coach existe
+                await ensureCoachProfile(user);
 
                 const form = e.target as HTMLFormElement;
                 const formData = new FormData(form);
 
-                const dateNaissance = (formData.get('date_naissance') as string) || null;
+                const dateNaissanceValue = formData.get('date_naissance') as string;
+                const dateNaissance = dateNaissanceValue ? dateNaissanceValue : null;
+
+                const nom = (formData.get('nom') as string)?.trim();
+                const prenom = (formData.get('prenom') as string)?.trim();
+                const email = (formData.get('email') as string)?.trim() || null;
+                const telephone = (formData.get('telephone') as string)?.trim() || null;
+
+                if (!nom || !prenom) {
+                  alert('Le nom et le prénom sont obligatoires');
+                  return;
+                }
 
                 const { error } = await supabase
                   .from('clients')
                   .insert([{
                     coach_id: user.id,
-                    nom: formData.get('nom'),
-                    prenom: formData.get('prenom'),
-                    email: formData.get('email') || null,
-                    telephone: formData.get('telephone') || null,
+                    nom,
+                    prenom,
+                    email,
+                    telephone,
                     date_naissance: dateNaissance,
-                    niveau: formData.get('niveau'),
+                    niveau: formData.get('niveau') || 'debutant',
                     objectifs: []
                   }]);
 
-                if (error) throw error;
+                if (error) {
+                  console.error('Erreur Supabase:', error);
+                  throw error;
+                }
 
                 setShowAddModal(false);
+                form.reset();
                 fetchClients();
               } catch (error: any) {
                 console.error('Erreur création client:', error);
-                alert(`Erreur lors de la création : ${error?.message || JSON.stringify(error)}`);
+                alert(`Erreur lors de la création : ${error?.message || error?.error_description || JSON.stringify(error)}`);
               }
             }}>
               <div className="space-y-4">
