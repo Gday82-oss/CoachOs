@@ -278,16 +278,16 @@ function Hero() {
             </span>
 
             <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight mb-6">
-              <span className="text-[#1A2B4A]">Le système<br />d'exploitation</span>
+              <span className="text-[#1A2B4A]">L'app qui prend soin</span>
               <br />
               <span style={{ background: 'linear-gradient(135deg, #00C896 0%, #00E5FF 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                des coachs sportifs
+                de votre activité
               </span>
             </h1>
 
             <p className="text-lg text-gray-500 max-w-xl mx-auto lg:mx-0 mb-10 leading-relaxed">
-              Gérez vos clients, programmes, séances et paiements en un seul endroit.
-              Moins d'administration, plus de coaching.
+              Consacrez-vous à ce qui compte vraiment — vos clients.
+              MyCareCoach gère le reste.
             </p>
 
             {/* Boutons */}
