@@ -79,7 +79,7 @@ const features = [
   {
     icon: LayoutDashboard,
     title: 'Dashboard',
-    description: 'Une vue d'ensemble de votre activité : chiffre d'affaires, séances à venir et alertes en temps réel.',
+    description: "Une vue d'ensemble de votre activité : chiffre d'affaires, séances à venir et alertes en temps réel.",
     color: 'text-indigo-500',
     bg: 'bg-indigo-50',
   },
@@ -107,7 +107,7 @@ const features = [
   {
     icon: Activity,
     title: 'Suivi des métriques',
-    description: 'Suivez les progrès de chaque client : poids, VO2max, performances et courbes d'évolution.',
+    description: "Suivez les progrès de chaque client : poids, VO2max, performances et courbes d'évolution.",
     color: 'text-rose-500',
     bg: 'bg-rose-50',
   },
@@ -160,21 +160,21 @@ const testimonials = [
     role: 'Coach fitness & nutrition',
     avatar: 'SM',
     avatarColor: 'from-emerald-400 to-teal-500',
-    text: 'MyCareCoach a transformé ma façon de travailler. Je gagne 3h par semaine sur l'administratif et mes clients sont ravis de recevoir leurs programmes directement sur la plateforme.',
+    text: "MyCareCoach a transformé ma façon de travailler. Je gagne 3h par semaine sur l'administratif et mes clients sont ravis de recevoir leurs programmes directement sur la plateforme.",
   },
   {
     name: 'Julien Bertrand',
     role: 'Préparateur physique',
     avatar: 'JB',
     avatarColor: 'from-indigo-400 to-blue-500',
-    text: 'La gestion des attestations sportives était un cauchemar. Maintenant, c'est automatique. Je recommande à tous mes collègues qui veulent professionnaliser leur activité.',
+    text: "La gestion des attestations sportives était un cauchemar. Maintenant, c'est automatique. Je recommande à tous mes collègues qui veulent professionnaliser leur activité.",
   },
   {
     name: 'Camille Leroux',
     role: 'Coach running & trail',
     avatar: 'CL',
     avatarColor: 'from-orange-400 to-rose-500',
-    text: 'Le suivi des métriques est bluffant. Mes clients voient leurs progrès en temps réel et ça booste leur motivation. C'est devenu un argument de vente pour moi.',
+    text: "Le suivi des métriques est bluffant. Mes clients voient leurs progrès en temps réel et ça booste leur motivation. C'est devenu un argument de vente pour moi.",
   },
 ];
 
