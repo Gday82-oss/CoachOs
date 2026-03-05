@@ -11,6 +11,32 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+// Utilitaire : s'assure que le profil coach existe (fix pour trigger qui peut échouer)
+export async function ensureCoachProfile(user: any) {
+  if (!user) return;
+  
+  const { data: existingCoach } = await supabase
+    .from('coachs')
+    .select('id')
+    .eq('id', user.id)
+    .maybeSingle();
+  
+  if (!existingCoach) {
+    const { error } = await supabase
+      .from('coachs')
+      .insert({
+        id: user.id,
+        email: user.email,
+        nom: user.user_metadata?.nom || 'Coach',
+        prenom: user.user_metadata?.prenom || 'Nouveau'
+      });
+    
+    if (error) {
+      console.error('Erreur création profil coach:', error);
+    }
+  }
+}
+
 // Types pour MyCareCoach
 export interface Client {
   id: string;
