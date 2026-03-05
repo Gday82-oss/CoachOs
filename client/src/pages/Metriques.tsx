@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, ensureCoachProfile } from '../lib/supabase';
 import { Plus, Scale, Heart, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -42,6 +42,7 @@ export default function Metriques() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      await ensureCoachProfile(user);
 
       const { data: clientsData } = await supabase
         .from('clients')

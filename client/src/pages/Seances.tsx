@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, ensureCoachProfile } from '../lib/supabase';
 import { Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -39,6 +39,7 @@ export default function Seances() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      await ensureCoachProfile(user);
 
       const debutMois = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0];
       const finMois = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0];

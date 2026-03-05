@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, ensureCoachProfile } from '../lib/supabase';
 import { FileText, Download, Plus, Calendar, Euro } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -37,6 +37,7 @@ export default function Attestations() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      await ensureCoachProfile(user);
 
       const { data: attestationsData } = await supabase
         .from('attestations')

@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Plus, TrendingUp, Users, CheckCircle, Clock, AlertCircle, Search, X, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { supabase, Facture } from '../lib/supabase';
+import { supabase, Facture, ensureCoachProfile } from '../lib/supabase';
 
 interface Client {
   id: string;
@@ -32,6 +32,7 @@ export default function Paiements() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      await ensureCoachProfile(user);
 
       const [{ data: facturesData }, { data: clientsData }] = await Promise.all([
         supabase.from('factures').select('*, client:clients(nom, prenom)').eq('coach_id', user.id).order('created_at', { ascending: false }),

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { supabase, ensureCoachProfile } from '../lib/supabase';
 import { 
   Users, 
   Calendar, 
@@ -56,6 +56,7 @@ export default function Dashboard() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      await ensureCoachProfile(user);
 
       // Stats clients
       const { count: totalClients } = await supabase

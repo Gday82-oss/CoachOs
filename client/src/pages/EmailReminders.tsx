@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, ensureCoachProfile } from '../lib/supabase';
 import { Mail, Clock, Check, X, Send, Settings } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -49,6 +49,7 @@ export default function EmailReminders() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      await ensureCoachProfile(user);
 
       const { data } = await supabase
         .from('email_logs')

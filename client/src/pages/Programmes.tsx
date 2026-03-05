@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, ensureCoachProfile } from '../lib/supabase';
 import { Plus, FileText, Calendar, Clock, ChevronRight, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -41,6 +41,7 @@ export default function Programmes() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      await ensureCoachProfile(user);
 
       let query = supabase
         .from('programmes')
