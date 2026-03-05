@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { User } from '@supabase/supabase-js';
-import { 
+import {
   LayoutDashboard,
-  Users, 
-  Calendar, 
-  Dumbbell, 
+  Users,
+  Calendar,
+  Dumbbell,
   FileText,
   Activity,
   Mail,
@@ -17,9 +17,9 @@ import {
   Moon,
   Bell,
   Search,
-  Heart,
   LogOut
 } from 'lucide-react';
+import Logo from './components/Logo';
 import { useTheme } from './contexts/ThemeContext';
 import { supabase } from './lib/supabase';
 import Dashboard from './pages/Dashboard';
@@ -62,41 +62,37 @@ export default function CoachApp() {
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-300">
       {/* Sidebar */}
-      <motion.aside 
+      <motion.aside
         initial={false}
         animate={{ width: sidebarOpen ? 256 : 64 }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
-        className="bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 flex flex-col shadow-xl"
+        className="flex flex-col shadow-xl flex-shrink-0"
+        style={{ background: '#1A2B4A' }}
       >
-        <div className="p-4 flex items-center justify-between border-b border-gray-200 dark:border-slate-800">
+        <div className="p-4 flex items-center justify-between border-b border-white/10">
           <AnimatePresence mode="wait">
             {sidebarOpen && (
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="flex items-center gap-2"
+                className="flex flex-col gap-0.5"
               >
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center">
-                  <Heart className="text-white" size={18} />
-                </div>
-                <div className="flex flex-col">
-                  <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-500 to-blue-500 bg-clip-text text-transparent">
-                    MyCareCoach
-                  </h1>
-                  <span className="text-xs text-emerald-600 font-medium">Votre santé en mouvement</span>
-                </div>
+                <Logo height={32} textVariant="white" />
+                <span className="text-xs italic text-white/50 pl-10">
+                  L'app qui prend soin de votre activité
+                </span>
               </motion.div>
             )}
           </AnimatePresence>
-          
-          <motion.button 
+
+          <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
           >
-            {sidebarOpen ? <X size={20} className="text-gray-600 dark:text-gray-400" /> : <Menu size={20} className="text-gray-600 dark:text-gray-400" />}
+            {sidebarOpen ? <X size={20} className="text-white/70" /> : <Menu size={20} className="text-white/70" />}
           </motion.button>
         </div>
 
@@ -107,11 +103,12 @@ export default function CoachApp() {
               to={item.path}
               className={({ isActive }) =>
                 `flex items-center gap-3 p-3 rounded-xl mb-1 transition-all duration-200 ${
-                  isActive 
-                    ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/25' 
-                    : 'hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-600 dark:text-gray-400'
+                  isActive
+                    ? 'text-white shadow-lg shadow-[#00C896]/30'
+                    : 'text-white/70 hover:bg-[#00C896]/20 hover:text-white'
                 }`
               }
+              style={({ isActive }) => isActive ? { backgroundColor: '#00C896' } : {}}
             >
               <motion.div
                 whileHover={{ rotate: 5 }}
@@ -135,12 +132,12 @@ export default function CoachApp() {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-gray-200 dark:border-slate-800 space-y-2">
+        <div className="p-4 border-t border-white/10 space-y-2">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={toggleTheme}
-            className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors w-full text-gray-600 dark:text-gray-400"
+            className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition-colors w-full text-white/70 hover:text-white"
           >
             {theme === 'light' ? <Moon size={20} /> : <Sun size={20} className="text-amber-400" />}
             <AnimatePresence mode="wait">
@@ -160,7 +157,7 @@ export default function CoachApp() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleLogout}
-            className="flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 text-red-600 transition-colors w-full"
+            className="flex items-center gap-3 p-3 rounded-xl hover:bg-red-500/20 text-red-400 transition-colors w-full"
           >
             <LogOut size={20} />
             <AnimatePresence mode="wait">
@@ -177,7 +174,7 @@ export default function CoachApp() {
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
         {/* Header */}
-        <header className="sticky top-0 z-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-200 dark:border-slate-800 px-8 py-4">
+        <header className="sticky top-0 z-10 bg-white border-b border-[#E5E7EB] px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4 flex-1 max-w-xl">
               <div className="relative flex-1">
@@ -185,7 +182,7 @@ export default function CoachApp() {
                 <input
                   type="text"
                   placeholder="Rechercher..."
-                  className="w-full pl-10 pr-4 py-2 bg-gray-100 dark:bg-slate-800 rounded-xl border-none focus:ring-2 focus:ring-emerald-500 transition-all"
+                  className="w-full pl-10 pr-4 py-2 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#00C896]/30 focus:border-[#00C896] transition-all"
                 />
               </div>
             </div>
@@ -204,7 +201,9 @@ export default function CoachApp() {
                 whileHover={{ scale: 1.05 }}
                 className="flex items-center gap-3 pl-4 border-l border-gray-200 dark:border-slate-800"
               >
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center text-white font-medium"
+                <div
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-white font-medium"
+                  style={{ background: '#00C896' }}
                 >
                   {user?.user_metadata?.prenom?.[0] || 'C'}
                 </div>
@@ -221,14 +220,14 @@ export default function CoachApp() {
 
         <div className="p-8">
           <Routes>
-            <Route path="/app" element={<Dashboard />} />
-            <Route path="/app/clients" element={<Clients />} />
-            <Route path="/app/seances" element={<Seances />} />
-            <Route path="/app/programmes" element={<Programmes />} />
-            <Route path="/app/metriques" element={<Metriques />} />
-            <Route path="/app/attestations" element={<Attestations />} />
-            <Route path="/app/emails" element={<EmailReminders />} />
-            <Route path="/app/settings" element={<SettingsPage />} />
+            <Route index element={<Dashboard />} />
+            <Route path="clients" element={<Clients />} />
+            <Route path="seances" element={<Seances />} />
+            <Route path="programmes" element={<Programmes />} />
+            <Route path="metriques" element={<Metriques />} />
+            <Route path="attestations" element={<Attestations />} />
+            <Route path="emails" element={<EmailReminders />} />
+            <Route path="settings" element={<SettingsPage />} />
           </Routes>
         </div>
       </main>

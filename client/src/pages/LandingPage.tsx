@@ -305,16 +305,19 @@ function Hero() {
               </a>
             </div>
 
-            {/* Stats bar */}
-            <div className="flex flex-wrap justify-center lg:justify-start gap-6 pt-4 border-t border-[#1A2B4A]/8">
+            {/* Stats bar avec séparateurs verticaux */}
+            <div className="flex flex-wrap justify-center lg:justify-start pt-4 border-t border-[#1A2B4A]/8">
               {[
                 { value: '500+', label: 'Coachs actifs' },
                 { value: '98%',  label: 'Satisfaction' },
                 { value: '4.9/5', label: 'Note moyenne' },
-              ].map(({ value, label }) => (
-                <div key={label} className="text-center lg:text-left">
-                  <div className="font-display text-2xl font-extrabold text-[#00C896]">{value}</div>
-                  <div className="text-xs text-gray-500 font-medium">{label}</div>
+              ].map(({ value, label }, i) => (
+                <div key={label} className="flex items-center">
+                  {i > 0 && <div className="w-px h-8 mx-6 bg-[#1A2B4A]/15" />}
+                  <div className="text-center lg:text-left">
+                    <div className="font-display text-2xl font-extrabold text-[#00C896]">{value}</div>
+                    <div className="text-xs text-gray-500 font-medium">{label}</div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -336,8 +339,14 @@ function Features() {
   const [ref, visible] = useScrollReveal<HTMLDivElement>();
 
   return (
-    <section id="fonctionnalites" className="py-24 bg-white">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+    <section id="fonctionnalites" className="bg-white">
+      {/* Vague de transition depuis le hero vert */}
+      <div className="overflow-hidden" style={{ marginTop: '-2px' }}>
+        <svg viewBox="0 0 1440 80" preserveAspectRatio="none" className="w-full block" style={{ height: 60 }}>
+          <path d="M0,0 L1440,0 L1440,30 C1080,80 360,80 0,30 Z" fill="#F0FAF7" />
+        </svg>
+      </div>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-24">
         <div
           ref={ref}
           className={`text-center mb-16 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
@@ -362,6 +371,7 @@ function Features() {
       </div>
     </section>
   );
+
 }
 
 function FeatureCard({ icon: Icon, title, description, color, bg, delay }: {
@@ -372,10 +382,15 @@ function FeatureCard({ icon: Icon, title, description, color, bg, delay }: {
   return (
     <div
       ref={ref}
-      className={`group p-6 rounded-2xl border border-gray-100 bg-white hover:shadow-xl transition-all duration-300 cursor-default
+      className={`group relative overflow-hidden p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-default
         ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-      style={{ transitionDelay: `${delay}ms` }}
+      style={{ transitionDelay: `${delay}ms`, backgroundColor: '#F8FFFE' }}
     >
+      {/* Bordure colorée en haut de la carte au hover */}
+      <div
+        className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        style={{ background: color }}
+      />
       <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 transition-transform duration-200 group-hover:scale-110"
         style={{ background: bg }}>
         <Icon size={24} style={{ color }} />
@@ -543,7 +558,7 @@ function PricingCard({ name, price, period, description, features: pf, cta, high
         className={`block w-full text-center py-3.5 rounded-xl font-semibold text-sm transition-all duration-200 hover:scale-105 ${
           highlighted
             ? 'text-[#1A2B4A] hover:shadow-lg hover:shadow-[#00C896]/30'
-            : 'border-2 border-[#1A2B4A]/15 text-[#1A2B4A] hover:border-[#00C896] hover:text-[#00C896]'
+            : 'bg-white border-2 border-[#1A2B4A] text-[#1A2B4A] font-bold hover:bg-[#1A2B4A] hover:text-white'
         }`}
         style={highlighted ? { background: 'linear-gradient(135deg, #00C896, #00E5FF)' } : {}}
       >
