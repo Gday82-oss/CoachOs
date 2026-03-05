@@ -241,26 +241,28 @@ export default function Clients() {
                 const form = e.target as HTMLFormElement;
                 const formData = new FormData(form);
 
+                const dateNaissance = (formData.get('date_naissance') as string) || null;
+
                 const { error } = await supabase
                   .from('clients')
                   .insert([{
                     coach_id: user.id,
                     nom: formData.get('nom'),
                     prenom: formData.get('prenom'),
-                    email: formData.get('email'),
-                    telephone: formData.get('telephone'),
-                    date_naissance: formData.get('date_naissance'),
+                    email: formData.get('email') || null,
+                    telephone: formData.get('telephone') || null,
+                    date_naissance: dateNaissance,
                     niveau: formData.get('niveau'),
                     objectifs: []
                   }]);
 
                 if (error) throw error;
-                
+
                 setShowAddModal(false);
                 fetchClients();
-              } catch (error) {
-                console.error('Erreur:', error);
-                alert('Erreur lors de la création');
+              } catch (error: any) {
+                console.error('Erreur création client:', error);
+                alert(`Erreur lors de la création : ${error?.message || JSON.stringify(error)}`);
               }
             }}>
               <div className="space-y-4">
