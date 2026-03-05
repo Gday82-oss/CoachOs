@@ -184,6 +184,14 @@ Date d'émission: ${new Date(attestation.date_emission).toLocaleDateString('fr-F
               const formData = new FormData(form);
               const { data: { user } } = await supabase.auth.getUser();
               
+              if (!user) {
+                alert('Vous devez être connecté');
+                return;
+              }
+              
+              // S'assure que le profil coach existe
+              await ensureCoachProfile(user);
+              
               const mois = parseInt(formData.get('mois') as string);
               const annee = parseInt(formData.get('annee') as string);
               
@@ -194,7 +202,7 @@ Date d'émission: ${new Date(attestation.date_emission).toLocaleDateString('fr-F
               const { count } = await supabase
                 .from('seances')
                 .select('*', { count: 'exact', head: true })
-                .eq('coach_id', user?.id)
+                .eq('coach_id', user.id)
                 .eq('client_id', formData.get('client_id'))
                 .eq('fait', true)
                 .gte('date', debutMois)
@@ -203,7 +211,7 @@ Date d'émission: ${new Date(attestation.date_emission).toLocaleDateString('fr-F
               const montant = (count || 0) * 50; // 50€ par séance exemple
               
               await supabase.from('attestations').insert([{
-                coach_id: user?.id,
+                coach_id: user.id,
                 client_id: formData.get('client_id'),
                 mois,
                 annee,

@@ -134,15 +134,7 @@ export default function Clients() {
             <User size={32} className="text-gray-400" />
           </div>
           <h3 className="text-lg font-medium text-gray-800 mb-2">Aucun client pour le moment</h3>
-          <p className="text-gray-500 mb-6">Commencez par ajouter votre premier client</p>
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center gap-2 text-white px-6 py-3 rounded-xl transition-colors hover:opacity-90"
-            style={{ background: '#00C896' }}
-          >
-            <Plus size={20} />
-            Ajouter mon premier client
-          </button>
+          <p className="text-gray-500">Cliquez sur <span className="font-medium text-emerald-600">+ Nouveau client</span> en haut à droite pour commencer</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -12,28 +12,53 @@ if (!supabaseUrl || !supabaseAnonKey) {
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Utilitaire : s'assure que le profil coach existe (fix pour trigger qui peut échouer)
-export async function ensureCoachProfile(user: any) {
-  if (!user) return;
+export async function ensureCoachProfile(user: any): Promise<boolean> {
+  if (!user) {
+    console.warn('ensureCoachProfile: user is null');
+    return false;
+  }
   
-  const { data: existingCoach } = await supabase
-    .from('coachs')
-    .select('id')
-    .eq('id', user.id)
-    .maybeSingle();
-  
-  if (!existingCoach) {
-    const { error } = await supabase
+  try {
+    // Vérifie si le coach existe déjà
+    const { data: existingCoach, error: checkError } = await supabase
+      .from('coachs')
+      .select('id')
+      .eq('id', user.id)
+      .maybeSingle();
+    
+    if (checkError) {
+      console.error('Erreur vérification coach:', checkError);
+      return false;
+    }
+    
+    // Si le coach existe, tout est OK
+    if (existingCoach) {
+      return true;
+    }
+    
+    // Sinon, crée le profil coach
+    console.log('Création du profil coach pour:', user.email);
+    
+    const { error: insertError } = await supabase
       .from('coachs')
       .insert({
         id: user.id,
         email: user.email,
         nom: user.user_metadata?.nom || 'Coach',
-        prenom: user.user_metadata?.prenom || 'Nouveau'
+        prenom: user.user_metadata?.prenom || 'Nouveau',
+        created_at: new Date().toISOString()
       });
     
-    if (error) {
-      console.error('Erreur création profil coach:', error);
+    if (insertError) {
+      console.error('Erreur création profil coach:', insertError);
+      return false;
     }
+    
+    console.log('Profil coach créé avec succès');
+    return true;
+  } catch (error) {
+    console.error('Exception ensureCoachProfile:', error);
+    return false;
   }
 }
 

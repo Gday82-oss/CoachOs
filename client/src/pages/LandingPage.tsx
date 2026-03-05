@@ -622,7 +622,7 @@ function Footer() {
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen" style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}>
+    <div className="min-h-screen" style={{ fontFamily: "'DM Sans', system-ui, sans-serif", colorScheme: 'light' }}>
       <Header />
       <main>
         <Hero />

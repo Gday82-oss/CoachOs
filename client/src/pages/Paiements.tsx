@@ -65,7 +65,13 @@ export default function Paiements() {
     e.preventDefault();
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        alert('Vous devez être connecté');
+        return;
+      }
+      
+      // S'assure que le profil coach existe
+      await ensureCoachProfile(user);
 
       const ht = parseFloat(montant);
       const ttc = ht * (1 + parseFloat(tva) / 100);

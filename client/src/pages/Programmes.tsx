@@ -96,11 +96,7 @@ export default function Programmes() {
             <FileText size={32} className="text-gray-400" />
           </div>
           <h3 className="text-lg font-medium text-gray-800 mb-2">Aucun programme</h3>
-          <p className="text-gray-500 mb-6">Créez votre premier programme d'entraînement</p>
-          <button onClick={() => setShowAddModal(true)} className="inline-flex items-center gap-2 bg-emerald-500 text-white px-6 py-3 rounded-xl hover:bg-emerald-600">
-            <Plus size={20} />
-            Créer un programme
-          </button>
+          <p className="text-gray-500">Cliquez sur <span className="font-medium text-emerald-600">+ Nouveau programme</span> en haut à droite pour commencer</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -160,12 +156,20 @@ export default function Programmes() {
               const formData = new FormData(form);
               const { data: { user } } = await supabase.auth.getUser();
               
+              if (!user) {
+                alert('Vous devez être connecté');
+                return;
+              }
+              
+              // S'assure que le profil coach existe
+              await ensureCoachProfile(user);
+              
               const dateDebut = formData.get('date_debut') as string;
               const duree = parseInt(formData.get('duree_semaines') as string);
               const dateFin = dateDebut ? new Date(new Date(dateDebut).getTime() + duree * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : null;
               
               await supabase.from('programmes').insert([{
-                coach_id: user?.id,
+                coach_id: user.id,
                 client_id: formData.get('client_id'),
                 titre: formData.get('titre'),
                 contenu: formData.get('contenu'),

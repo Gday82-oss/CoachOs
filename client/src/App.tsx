@@ -20,12 +20,13 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    checkUser();
-
+    // onAuthStateChange fire immédiatement avec INITIAL_SESSION en Supabase v2
+    // On évite ainsi le double appel checkUserType
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user?.email) {
-        checkUserType(session.user.email);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser?.email) {
+        checkUserType(currentUser.email);
       } else {
         setUserType(null);
         setLoading(false);
@@ -34,17 +35,6 @@ function App() {
 
     return () => subscription.unsubscribe();
   }, []);
-
-  async function checkUser() {
-    const { data: { session } } = await supabase.auth.getSession();
-    setUser(session?.user ?? null);
-
-    if (session?.user?.email) {
-      await checkUserType(session.user.email);
-    } else {
-      setLoading(false);
-    }
-  }
 
   async function checkUserType(email: string) {
     try {
@@ -89,12 +79,6 @@ function App() {
     );
   }
 
-  const AppContent = () => {
-    if (!user) return <Navigate to="/login" replace />;
-    if (userType === 'client') return <ClientPortal />;
-    return <CoachApp />;
-  };
-
   return (
     <Routes>
       {/* Routes publiques */}
@@ -104,8 +88,17 @@ function App() {
       <Route path="/forgot-password" element={<ForgotPasswordWrapper />} />
       <Route path="/reset-password" element={<ResetPassword />} />
 
-      {/* Application protégée */}
-      <Route path="/app/*" element={<AppContent />} />
+      {/* Application protégée — guard inline pour éviter le remontage */}
+      <Route
+        path="/app/*"
+        element={
+          !user
+            ? <Navigate to="/login" replace />
+            : userType === 'client'
+              ? <ClientPortal />
+              : <CoachApp />
+        }
+      />
 
       {/* Redirections legacy */}
       <Route path="/auth" element={<Navigate to="/login" replace />} />

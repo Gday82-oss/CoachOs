@@ -53,7 +53,7 @@ export default function Seances() {
         .order('date, heure');
 
       const { data: clientsData } = await supabase
-        .from('clients')
+        .from('clients_coach')
         .select('id, prenom, nom')
         .eq('coach_id', user.id);
 
@@ -150,8 +150,16 @@ export default function Seances() {
               const formData = new FormData(form);
               const { data: { user } } = await supabase.auth.getUser();
               
+              if (!user) {
+                alert('Vous devez être connecté');
+                return;
+              }
+              
+              // S'assure que le profil coach existe
+              await ensureCoachProfile(user);
+              
               await supabase.from('seances').insert([{
-                coach_id: user?.id,
+                coach_id: user.id,
                 client_id: formData.get('client_id'),
                 date: formData.get('date'),
                 heure: formData.get('heure'),

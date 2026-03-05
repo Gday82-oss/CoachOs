@@ -59,7 +59,7 @@ body {
   border-radius: 4px;
 }
 
-.dark ::-webkit-scrollbar-thumb {
+#coach-app.dark ::-webkit-scrollbar-thumb {
   background: #475569;
 }
 
@@ -81,8 +81,52 @@ body {
   -webkit-backdrop-filter: blur(10px);
 }
 
-.dark .glass {
+#coach-app.dark .glass {
   background: rgba(30, 41, 59, 0.7);
+}
+
+/* ── Dark mode overrides ──────────────────────────────── */
+/* Scopées UNIQUEMENT à #coach-app — n'affectent jamais la landing page. */
+
+#coach-app.dark .bg-white {
+  background-color: #1A2535;
+}
+
+#coach-app.dark .bg-gray-50 {
+  background-color: #0F1923;
+}
+
+#coach-app.dark .bg-gray-100 {
+  background-color: #243044;
+}
+
+#coach-app.dark .text-gray-800 { color: #E8EDF5; }
+#coach-app.dark .text-gray-700 { color: #D4DAE6; }
+#coach-app.dark .text-gray-600 { color: #A8B4C4; }
+#coach-app.dark .text-gray-500 { color: #8896A8; }
+#coach-app.dark .text-gray-400 { color: #6B7A8D; }
+
+#coach-app.dark .border-gray-100,
+#coach-app.dark .border-gray-200,
+#coach-app.dark .border-gray-300 {
+  border-color: #2E3D55;
+}
+
+#coach-app.dark input,
+#coach-app.dark textarea,
+#coach-app.dark select {
+  background-color: #243044;
+  border-color: #2E3D55;
+  color: #E8EDF5;
+}
+
+#coach-app.dark input::placeholder,
+#coach-app.dark textarea::placeholder {
+  color: #8896A8;
+}
+
+#coach-app.dark ::-webkit-scrollbar-track {
+  background: #0F1923;
 }
 
 /* Gradient text */

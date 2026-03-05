@@ -93,7 +93,13 @@ export default function EmailReminders() {
   async function saveConfig() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        alert('Vous devez être connecté');
+        return;
+      }
+      
+      // S'assure que le profil coach existe
+      await ensureCoachProfile(user);
 
       await supabase
         .from('coach_config')
@@ -120,7 +126,13 @@ export default function EmailReminders() {
   async function sendManualReminder(clientId: string, seanceId: string) {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        alert('Vous devez être connecté');
+        return;
+      }
+      
+      // S'assure que le profil coach existe
+      await ensureCoachProfile(user);
 
       await supabase.from('email_logs').insert({
         coach_id: user.id,

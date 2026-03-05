@@ -23,11 +23,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     localStorage.setItem('theme', theme);
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    // Ne plus ajouter 'dark' sur <html> — le composant CoachApp
+    // applique lui-même la classe sur son propre wrapper.
   }, [theme]);
 
   const toggleTheme = () => {

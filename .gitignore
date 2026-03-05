@@ -31,3 +31,11 @@ coverage/
 *.tmp
 *.temp
 .vercel
+
+# Backup scripts secrets (fichier sur le VPS uniquement)
+*-backup.env
+
+# Deploy packages (binaires générés, ne pas versionner)
+*.tar.gz
+frontend.tar.gz
+backend.tar.gz

@@ -32,7 +32,7 @@ import EmailReminders from './pages/EmailReminders';
 import SettingsPage from './pages/Settings';
 
 const navItems = [
-  { path: '/app', icon: LayoutDashboard, label: 'Dashboard' },
+  { path: '/app', icon: LayoutDashboard, label: 'Dashboard', end: true },
   { path: '/app/clients', icon: Users, label: 'Clients' },
   { path: '/app/seances', icon: Calendar, label: 'Séances' },
   { path: '/app/programmes', icon: Dumbbell, label: 'Programmes' },
@@ -60,7 +60,7 @@ export default function CoachApp() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-300">
+    <div id="coach-app" className={`flex h-screen bg-gray-50 dark:bg-[#0F1923] transition-colors duration-300 ${theme === 'dark' ? 'dark' : ''}`}>
       {/* Sidebar */}
       <motion.aside
         initial={false}
@@ -101,6 +101,7 @@ export default function CoachApp() {
             <NavLink
               key={item.path}
               to={item.path}
+              end={item.end}
               className={({ isActive }) =>
                 `flex items-center gap-3 p-3 rounded-xl mb-1 transition-all duration-200 ${
                   isActive
@@ -174,15 +175,15 @@ export default function CoachApp() {
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
         {/* Header */}
-        <header className="sticky top-0 z-10 bg-white border-b border-[#E5E7EB] px-8 py-4">
+        <header className="sticky top-0 z-10 bg-white dark:bg-[#1A2535] border-b border-[#E5E7EB] dark:border-[#2E3D55] px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4 flex-1 max-w-xl">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-[#8896A8]" size={18} />
                 <input
                   type="text"
                   placeholder="Rechercher..."
-                  className="w-full pl-10 pr-4 py-2 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#00C896]/30 focus:border-[#00C896] transition-all"
+                  className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-[#243044] rounded-xl border border-gray-200 dark:border-[#2E3D55] dark:text-[#E8EDF5] dark:placeholder-[#8896A8] focus:outline-none focus:ring-2 focus:ring-[#00C896]/30 focus:border-[#00C896] transition-all"
                 />
               </div>
             </div>

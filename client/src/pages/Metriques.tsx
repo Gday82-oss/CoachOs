@@ -190,8 +190,16 @@ export default function Metriques() {
               const formData = new FormData(form);
               const { data: { user } } = await supabase.auth.getUser();
               
+              if (!user) {
+                alert('Vous devez être connecté');
+                return;
+              }
+              
+              // S'assure que le profil coach existe
+              await ensureCoachProfile(user);
+              
               await supabase.from('metriques').insert([{
-                coach_id: user?.id,
+                coach_id: user.id,
                 client_id: formData.get('client_id'),
                 date: formData.get('date'),
                 poids: parseFloat(formData.get('poids') as string) || null,
