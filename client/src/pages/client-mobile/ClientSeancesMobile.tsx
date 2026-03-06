@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Calendar, Clock, Check, X, MapPin, Video, User,
-  ChevronRight, AlertCircle
-} from 'lucide-react';
+import { useClientData, getStatutSeance } from '../../hooks/useClientData';
+import { motion } from 'framer-motion';
+import { Calendar, Clock, MapPin, ChevronRight } from 'lucide-react';
 
 interface ClientSeancesMobileProps {
   client: {
@@ -13,20 +11,15 @@ interface ClientSeancesMobileProps {
   };
 }
 
-interface Seance {
+interface SeanceDisplay {
   id: string;
   date: string;
   heure: string;
   duree: number;
   type: string;
-  notes?: string;
-  statut: 'a_venir' | 'faite' | 'annulee' | 'reportee';
-  mode: 'presentiel' | 'visio';
+  statut: 'a_venir' | 'faite' | 'passee';
   lieu?: string;
-  coach?: {
-    prenom: string;
-    nom: string;
-  };
+  coach?: { prenom: string; nom: string };
 }
 
 const containerVariants = {
@@ -39,140 +32,60 @@ const containerVariants = {
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     transition: { type: 'spring' as const, stiffness: 350, damping: 25 }
   }
 };
 
-const cardVariants = {
-  rest: { scale: 1 },
-  hover: { scale: 1.02 },
-  tap: { scale: 0.98 }
-};
-
-// Données démo
-const seancesDemo: Seance[] = [
-  {
-    id: '1',
-    date: new Date().toISOString().split('T')[0],
-    heure: '14:00',
-    duree: 60,
-    type: 'Renforcement musculaire',
-    statut: 'a_venir',
-    mode: 'presentiel',
-    lieu: 'Salle de sport',
-    coach: { prenom: 'Marie', nom: 'Dubois' }
-  },
-  {
-    id: '2',
-    date: new Date(Date.now() - 86400000).toISOString().split('T')[0],
-    heure: '10:00',
-    duree: 45,
-    type: 'Cardio HIIT',
-    statut: 'faite',
-    mode: 'visio',
-    coach: { prenom: 'Marie', nom: 'Dubois' }
-  },
-  {
-    id: '3',
-    date: new Date(Date.now() - 172800000).toISOString().split('T')[0],
-    heure: '16:30',
-    duree: 60,
-    type: 'Pilates',
-    statut: 'faite',
-    mode: 'presentiel',
-    lieu: 'Studio',
-    coach: { prenom: 'Marie', nom: 'Dubois' }
-  },
-  {
-    id: '4',
-    date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
-    heure: '09:00',
-    duree: 60,
-    type: 'Cross Training',
-    statut: 'a_venir',
-    mode: 'presentiel',
-    lieu: 'Parc',
-    coach: { prenom: 'Marie', nom: 'Dubois' }
-  },
-  {
-    id: '5',
-    date: new Date(Date.now() - 259200000).toISOString().split('T')[0],
-    heure: '18:00',
-    duree: 45,
-    type: 'Yoga',
-    statut: 'annulee',
-    mode: 'visio',
-    coach: { prenom: 'Marie', nom: 'Dubois' }
-  },
-];
-
 const getStatutConfig = (statut: string, isToday: boolean) => {
   if (isToday && statut === 'a_venir') {
     return {
-      couleur: 'bg-[#00C896] text-white',
-      bg: 'bg-gradient-to-br from-[#00C896] to-[#00E5FF]',
-      badge: 'Aujourd\'hui',
-      badgeBg: 'bg-white/20',
-      icon: Calendar
+      borderColor: '#FF8C42',
+      badgeBg: 'rgba(255, 140, 66, 0.1)',
+      badgeColor: '#FF8C42',
+      badge: "Aujourd'hui"
     };
   }
-  
   switch (statut) {
     case 'faite':
-      return {
-        couleur: 'bg-green-100 text-green-700',
-        bg: 'bg-green-50 border-green-100',
-        badge: 'Réalisée',
-        badgeBg: 'bg-green-100 text-green-700',
-        icon: Check
-      };
-    case 'annulee':
-      return {
-        couleur: 'bg-red-100 text-red-700',
-        bg: 'bg-red-50 border-red-100',
-        badge: 'Annulée',
-        badgeBg: 'bg-red-100 text-red-700',
-        icon: X
-      };
-    case 'reportee':
-      return {
-        couleur: 'bg-amber-100 text-amber-700',
-        bg: 'bg-amber-50 border-amber-100',
-        badge: 'Reportée',
-        badgeBg: 'bg-amber-100 text-amber-700',
-        icon: AlertCircle
-      };
+      return { borderColor: '#00C896', badgeBg: 'rgba(0, 200, 150, 0.1)', badgeColor: '#00C896', badge: 'Réalisée' };
+    case 'passee':
+      return { borderColor: '#E0E0E0', badgeBg: '#F5F5F5', badgeColor: '#9CA3AF', badge: 'Passée' };
     default:
-      return {
-        couleur: 'bg-gray-100 text-gray-600',
-        bg: 'bg-white border-gray-100',
-        badge: 'À venir',
-        badgeBg: 'bg-blue-100 text-blue-700',
-        icon: Clock
-      };
+      return { borderColor: '#FF8C42', badgeBg: 'rgba(255, 140, 66, 0.1)', badgeColor: '#FF8C42', badge: 'À venir' };
   }
 };
 
-export default function ClientSeancesMobile({ client: _client }: ClientSeancesMobileProps) {
-  const [seances] = useState<Seance[]>(seancesDemo);
+export default function ClientSeancesMobile({ client }: ClientSeancesMobileProps) {
+  const { seances: rawSeances, loading } = useClientData(client.id);
   const [filter, setFilter] = useState<'toutes' | 'avenir' | 'passees'>('toutes');
-  const [selectedSeance, setSelectedSeance] = useState<Seance | null>(null);
 
   const today = new Date().toISOString().split('T')[0];
 
+  // Mappe les séances Supabase vers le format d'affichage
+  const seances: SeanceDisplay[] = rawSeances.map(s => ({
+    id: s.id,
+    date: s.date,
+    heure: s.heure,
+    duree: s.duree ?? 0,
+    type: s.type,
+    statut: getStatutSeance(s),
+    lieu: s.lieu,
+    coach: s.coach,
+  }));
+
   const filteredSeances = seances.filter(s => {
-    if (filter === 'avenir') return s.date >= today && s.statut !== 'annulee';
-    if (filter === 'passees') return s.date < today || s.statut === 'faite' || s.statut === 'annulee';
+    if (filter === 'avenir') return s.statut === 'a_venir';
+    if (filter === 'passees') return s.statut === 'faite' || s.statut === 'passee';
     return true;
   });
 
-  const groupByMonth = (seances: Seance[]) => {
-    const grouped: { [key: string]: Seance[] } = {};
-    seances.forEach(s => {
-      const month = new Date(s.date).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+  const groupByMonth = (list: SeanceDisplay[]) => {
+    const grouped: { [key: string]: SeanceDisplay[] } = {};
+    list.forEach(s => {
+      const month = new Date(s.date + 'T00:00:00').toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
       if (!grouped[month]) grouped[month] = [];
       grouped[month].push(s);
     });
@@ -181,20 +94,37 @@ export default function ClientSeancesMobile({ client: _client }: ClientSeancesMo
 
   const groupedSeances = groupByMonth(filteredSeances);
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          className="w-10 h-10 border-4 rounded-full"
+          style={{ borderColor: '#00C896', borderTopColor: 'transparent' }}
+        />
+      </div>
+    );
+  }
 
   return (
     <motion.div
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-6 pt-2"
+      className="space-y-5 pt-6"
     >
-      {/* Header */}
+      {/* Header vert */}
       <motion.div variants={itemVariants}>
-        <h1 className="text-3xl font-bold text-gray-800">Mes séances</h1>
-        <p className="text-gray-500 text-sm mt-1">
-          {seances.filter(s => s.date >= today && s.statut === 'a_venir').length} séances à venir
-        </p>
+        <div
+          className="rounded-3xl p-6 text-white"
+          style={{ backgroundColor: '#00C896' }}
+        >
+          <h1 className="text-2xl font-bold mb-1">Mes séances</h1>
+          <p className="text-white/80 text-sm">
+            {seances.filter(s => s.statut === 'a_venir').length} séances à venir
+          </p>
+        </div>
       </motion.div>
 
       {/* Filtres */}
@@ -202,13 +132,14 @@ export default function ClientSeancesMobile({ client: _client }: ClientSeancesMo
         {(['toutes', 'avenir', 'passees'] as const).map((f) => (
           <motion.button
             key={f}
-            whileTap={{ scale: 0.95 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => setFilter(f)}
-            className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-              filter === f
-                ? 'bg-[#00C896] text-white shadow-lg shadow-[#00C896]/25'
-                : 'bg-white text-gray-600 border border-gray-200'
-            }`}
+            className="px-4 py-2.5 rounded-full text-sm font-semibold transition-all"
+            style={{
+              backgroundColor: filter === f ? '#FF8C42' : 'white',
+              color: filter === f ? 'white' : '#6B7A8D',
+              boxShadow: filter === f ? '0 4px 15px rgba(255, 140, 66, 0.3)' : '0 2px 8px rgba(0,0,0,0.06)'
+            }}
           >
             {f === 'toutes' ? 'Toutes' : f === 'avenir' ? 'À venir' : 'Passées'}
           </motion.button>
@@ -216,53 +147,53 @@ export default function ClientSeancesMobile({ client: _client }: ClientSeancesMo
       </motion.div>
 
       {/* Liste des séances */}
-      <motion.div variants={itemVariants} className="space-y-6">
+      <motion.div variants={itemVariants} className="space-y-4">
         {Object.keys(groupedSeances).length === 0 ? (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-16"
-          >
-            <div className="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
-              <Calendar className="text-gray-400" size={40} />
+          <div className="text-center py-12">
+            <div 
+              className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4"
+              style={{ backgroundColor: '#F0FAF7' }}
+            >
+              <Calendar size={40} style={{ color: '#6B7A8D' }} />
             </div>
-            <p className="text-gray-500 font-medium">Aucune séance trouvée</p>
-          </motion.div>
+            <p style={{ color: '#6B7A8D' }}>Aucune séance trouvée</p>
+          </div>
         ) : (
           Object.entries(groupedSeances).map(([month, monthSeances]) => (
             <div key={month}>
-              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3 capitalize">
+              <h3 
+                className="text-sm font-bold uppercase tracking-wide mb-3 capitalize"
+                style={{ color: '#6B7A8D' }}
+              >
                 {month}
               </h3>
               <div className="space-y-3">
-                {monthSeances.map((seance) => {
+                {monthSeances.map((seance: SeanceDisplay) => {
                   const isToday = seance.date === today;
                   const config = getStatutConfig(seance.statut, isToday);
-                  const Icon = config.icon;
                   
                   return (
                     <motion.div
                       key={seance.id}
-                      variants={cardVariants}
-                      initial="rest"
-                      whileHover="hover"
-                      whileTap="tap"
-                      onClick={() => setSelectedSeance(seance)}
-                      className={`rounded-3xl p-4 border-2 cursor-pointer transition-all ${
-                        isToday 
-                          ? 'bg-gradient-to-br from-[#00C896] to-[#00E5FF] text-white border-transparent shadow-xl shadow-[#00C896]/20' 
-                          : `${config.bg} border-transparent`
-                      }`}
+                      variants={itemVariants}
+                      whileTap={{ scale: 0.97 }}
+                      className="rounded-2xl p-4 cursor-pointer"
+                      style={{
+                        backgroundColor: 'white',
+                        borderLeft: `4px solid ${config.borderColor}`,
+                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.06)'
+                      }}
                     >
                       <div className="flex items-start gap-4">
                         {/* Date badge */}
-                        <div className={`w-14 h-14 rounded-2xl flex flex-col items-center justify-center flex-shrink-0 ${
-                          isToday ? 'bg-white/20' : config.couleur
-                        }`}>
-                          <span className={`text-xs font-bold ${isToday ? 'text-white/80' : ''}`}>
+                        <div 
+                          className="w-14 h-14 rounded-2xl flex flex-col items-center justify-center flex-shrink-0"
+                          style={{ backgroundColor: '#F0FAF7' }}
+                        >
+                          <span className="text-xs font-medium" style={{ color: '#6B7A8D' }}>
                             {new Date(seance.date).toLocaleDateString('fr-FR', { month: 'short' })}
                           </span>
-                          <span className={`text-xl font-bold ${isToday ? 'text-white' : ''}`}>
+                          <span className="text-xl font-bold" style={{ color: '#1A2B4A' }}>
                             {new Date(seance.date).getDate()}
                           </span>
                         </div>
@@ -271,36 +202,37 @@ export default function ClientSeancesMobile({ client: _client }: ClientSeancesMo
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between">
                             <div>
-                              <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold mb-2 ${
-                                isToday ? 'bg-white/20 text-white' : config.badgeBg
-                              }`}>
-                                <Icon size={12} />
+                              <span 
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold mb-2"
+                                style={{ 
+                                  backgroundColor: config.badgeBg,
+                                  color: config.badgeColor
+                                }}
+                              >
                                 {config.badge}
                               </span>
-                              <h4 className={`font-bold text-base truncate ${isToday ? 'text-white' : 'text-gray-800'}`}>
+                              <h4 className="font-bold text-base" style={{ color: '#1A2B4A' }}>
                                 {seance.type}
                               </h4>
                             </div>
                           </div>
                           
-                          <div className={`flex items-center gap-4 mt-2 text-sm ${isToday ? 'text-white/90' : 'text-gray-500'}`}>
-                            <span className="flex items-center gap-1.5">
-                              <Clock size={14} />
+                          <div 
+                            className="flex items-center gap-4 mt-2 text-sm"
+                            style={{ color: '#6B7A8D' }}
+                          >
+                            <span className="flex items-center gap-1">
+                              <Clock size={14} style={{ color: '#FF8C42' }} />
                               {seance.heure?.slice(0, 5)}
                             </span>
-                            <span className="flex items-center gap-1.5">
-                              {seance.mode === 'visio' ? (
-                                <Video size={14} />
-                              ) : (
-                                <MapPin size={14} />
-                              )}
-                              {seance.mode === 'visio' ? 'Visio' : seance.lieu || 'Salle'}
+                            <span className="flex items-center gap-1">
+                              <MapPin size={14} style={{ color: '#FF8C42' }} />
+                              {seance.lieu || 'Salle'}
                             </span>
                           </div>
                         </div>
 
-                        {/* Arrow */}
-                        <ChevronRight className={`flex-shrink-0 ${isToday ? 'text-white/60' : 'text-gray-300'}`} size={20} />
+                        <ChevronRight style={{ color: '#6B7A8D' }} size={20} />
                       </div>
                     </motion.div>
                   );
@@ -313,96 +245,6 @@ export default function ClientSeancesMobile({ client: _client }: ClientSeancesMo
 
       {/* Espace pour bottom nav */}
       <div className="h-4" />
-
-      {/* Modal détail séance */}
-      <AnimatePresence>
-        {selectedSeance && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
-            onClick={() => setSelectedSeance(null)}
-          >
-            <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring' as const, damping: 25, stiffness: 300 }}
-              className="bg-white w-full max-w-md rounded-t-[2rem] sm:rounded-[2rem] p-6"
-              onClick={e => e.stopPropagation()}
-            >
-              {/* Handle */}
-              <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6" />
-              
-              <div className="flex items-center gap-4 mb-6">
-                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${
-                  selectedSeance.statut === 'faite' ? 'bg-green-100' : 
-                  selectedSeance.statut === 'annulee' ? 'bg-red-100' :
-                  'bg-[#00C896]/10'
-                }`}>
-                  {selectedSeance.statut === 'faite' ? (
-                    <Check size={32} className="text-green-600" />
-                  ) : selectedSeance.statut === 'annulee' ? (
-                    <X size={32} className="text-red-600" />
-                  ) : (
-                    <Calendar size={32} className="text-[#00C896]" />
-                  )}
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-gray-800">{selectedSeance.type}</h3>
-                  <p className="text-gray-500">
-                    {new Date(selectedSeance.date).toLocaleDateString('fr-FR', { 
-                      weekday: 'long', day: 'numeric', month: 'long' 
-                    })}
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-3 mb-6">
-                <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl">
-                  <Clock className="text-gray-400" size={20} />
-                  <div>
-                    <p className="font-semibold text-gray-800">{selectedSeance.heure?.slice(0, 5)}</p>
-                    <p className="text-sm text-gray-500">{selectedSeance.duree} minutes</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl">
-                  {selectedSeance.mode === 'visio' ? (
-                    <Video size={20} className="text-purple-500" />
-                  ) : (
-                    <MapPin size={20} className="text-gray-400" />
-                  )}
-                  <div>
-                    <p className="font-semibold text-gray-800">
-                      {selectedSeance.mode === 'visio' ? 'Visioconférence' : selectedSeance.lieu || 'Salle de sport'}
-                    </p>
-                    <p className="text-sm text-gray-500">Mode {selectedSeance.mode}</p>
-                  </div>
-                </div>
-
-                {selectedSeance.coach && (
-                  <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl">
-                    <User className="text-gray-400" size={20} />
-                    <div>
-                      <p className="font-semibold text-gray-800">{selectedSeance.coach.prenom} {selectedSeance.coach.nom}</p>
-                      <p className="text-sm text-gray-500">Coach</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <button
-                onClick={() => setSelectedSeance(null)}
-                className="w-full py-4 bg-[#00C896] text-white rounded-2xl font-bold shadow-lg shadow-[#00C896]/20"
-              >
-                Fermer
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.div>
   );
 }

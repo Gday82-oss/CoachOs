@@ -50,7 +50,7 @@ function App() {
     // Fallback : vérification en base de données
     try {
       const { data: clientData, error: clientError } = await supabase
-        .from('clients_coach')
+        .from('clients')
         .select('id')
         .eq('email', user.email ?? '')
         .maybeSingle();

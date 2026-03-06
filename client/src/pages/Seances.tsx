@@ -99,12 +99,12 @@ export default function Seances() {
 
       <div className="bg-white dark:bg-[#1A2535] rounded-xl shadow-sm border border-gray-100 dark:border-[#2E3D55] p-6">
         <div className="flex items-center justify-between mb-6">
-          <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))} className="p-2 hover:bg-gray-100 dark:bg-[#243044] rounded-lg">
-            <ChevronLeft />
+          <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))} className="p-2 hover:bg-gray-100 dark:hover:bg-[#243044] rounded-lg">
+            <ChevronLeft className="dark:text-white" />
           </button>
           <h2 className="text-xl font-semibold dark:text-white">{mois[currentDate.getMonth()]} {currentDate.getFullYear()}</h2>
-          <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))} className="p-2 hover:bg-gray-100 dark:bg-[#243044] rounded-lg">
-            <ChevronRight />
+          <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))} className="p-2 hover:bg-gray-100 dark:hover:bg-[#243044] rounded-lg">
+            <ChevronRight className="dark:text-white" />
           </button>
         </div>
 

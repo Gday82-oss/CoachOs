@@ -1,11 +1,11 @@
 import { useState } from 'react';
+import { useClientData, calcStreak } from '../../hooks/useClientData';
 import { motion } from 'framer-motion';
-import { 
-  TrendingUp, Target, ChevronRight,
-  Activity, Scale, Flame, Dumbbell, Camera,
-  Trophy, Star, Zap, Crown, Medal
+import {
+  TrendingUp, Target, Flame, Trophy,
+  Star, Zap, Crown, Medal, Camera
 } from 'lucide-react';
-import { 
+import {
   XAxis, YAxis, ResponsiveContainer,
   AreaChart, Area, Tooltip
 } from 'recharts';
@@ -18,18 +18,6 @@ interface ClientProgresMobileProps {
   };
 }
 
-// Données pour le graphique
-const poidsData = [
-  { date: 'S1', poids: 82.5, graisse: 22 },
-  { date: 'S2', poids: 81.8, graisse: 21.5 },
-  { date: 'S3', poids: 81.2, graisse: 21 },
-  { date: 'S4', poids: 80.5, graisse: 20.5 },
-  { date: 'S5', poids: 79.8, graisse: 20 },
-  { date: 'S6', poids: 79.2, graisse: 19.5 },
-  { date: 'S7', poids: 78.5, graisse: 19 },
-  { date: 'S8', poids: 78.0, graisse: 18.5 },
-];
-
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -40,73 +28,89 @@ const containerVariants = {
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     transition: { type: 'spring' as const, stiffness: 350, damping: 25 }
   }
 };
 
 const badges = [
-  { id: 1, icon: Flame, nom: '7 jours', desc: 'Streak semaine', couleur: 'bg-orange-100 text-orange-600', obtenu: true },
-  { id: 2, icon: Trophy, nom: '30 jours', desc: 'Streak mois', couleur: 'bg-yellow-100 text-yellow-600', obtenu: true },
-  { id: 3, icon: Zap, nom: '10 séances', desc: 'Assiduité', couleur: 'bg-blue-100 text-blue-600', obtenu: true },
-  { id: 4, icon: Target, nom: '-5kg', desc: 'Objectif poids', couleur: 'bg-green-100 text-green-600', obtenu: true },
-  { id: 5, icon: Crown, nom: 'Champion', desc: '100 séances', couleur: 'bg-purple-100 text-purple-600', obtenu: false },
-  { id: 6, icon: Medal, nom: 'Force +20%', desc: 'Progression', couleur: 'bg-pink-100 text-pink-600', obtenu: false },
+  { id: 1, icon: Flame, nom: '7 jours', desc: 'Streak semaine', obtenu: true },
+  { id: 2, icon: Trophy, nom: '30 jours', desc: 'Streak mois', obtenu: true },
+  { id: 3, icon: Zap, nom: '10 seances', desc: 'Assiduite', obtenu: true },
+  { id: 4, icon: Target, nom: '-5kg', desc: 'Objectif poids', obtenu: true },
+  { id: 5, icon: Crown, nom: 'Champion', desc: '100 seances', obtenu: false },
+  { id: 6, icon: Medal, nom: 'Force +20%', desc: 'Progression', obtenu: false },
 ];
 
 const objectifs = [
-  { nom: 'Perte de poids', cible: 75, actuel: 78, unite: 'kg', icone: Scale },
-  { nom: 'Masse grasse', cible: 15, actuel: 18.5, unite: '%', icone: Activity },
-  { nom: 'Streak entraînement', cible: 30, actuel: 12, unite: 'jours', icone: Flame },
+  { nom: 'Perte de poids', cible: 75, actuel: 78, unite: 'kg' },
+  { nom: 'Masse grasse', cible: 15, actuel: 18.5, unite: '%' },
+  { nom: 'Streak', cible: 30, actuel: 12, unite: 'jours' },
 ];
 
-export default function ClientProgresMobile({ client: _client }: ClientProgresMobileProps) {
-  const [activeMetric, setActiveMetric] = useState<'poids' | 'graisse'>('poids');
+export default function ClientProgresMobile({ client }: ClientProgresMobileProps) {
+  const { seances, metriques, loading } = useClientData(client.id);
   const [showPhotos, setShowPhotos] = useState(false);
 
-  const evolution = activeMetric === 'poids' 
+  const poidsData = metriques
+    .filter(m => m.poids != null)
+    .map((m, idx) => ({ date: `S${idx + 1}`, poids: m.poids as number }));
+
+  const evolution = poidsData.length >= 2
     ? (poidsData[0].poids - poidsData[poidsData.length - 1].poids).toFixed(1)
-    : (poidsData[0].graisse - poidsData[poidsData.length - 1].graisse).toFixed(1);
+    : null;
+
+  const streak = calcStreak(seances);
+  const thisMonth = new Date().toISOString().slice(0, 7);
+  const seancesCeMois = seances.filter(s => s.fait && s.date.startsWith(thisMonth)).length;
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          className="w-10 h-10 border-4 rounded-full"
+          style={{ borderColor: '#FF8C42', borderTopColor: 'transparent' }}
+        />
+      </div>
+    );
+  }
 
   return (
     <motion.div
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-6 pt-2"
+      className="space-y-5 pt-6"
     >
-      {/* Header */}
+      {/* Carte resume avec degrade */}
       <motion.div variants={itemVariants}>
-        <h1 className="text-3xl font-bold text-gray-800">Mes progrès</h1>
-        <p className="text-gray-500 text-sm mt-1">
-          Tu progresses bien, continue ! 🚀
-        </p>
-      </motion.div>
-
-      {/* Carte résumé */}
-      <motion.div variants={itemVariants}>
-        <div className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-3xl p-6 text-white shadow-2xl shadow-purple-500/20">
+        <div
+          className="rounded-3xl p-6 text-white"
+          style={{ background: 'linear-gradient(135deg, #FF8C42 0%, #FFB347 100%)' }}
+        >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm opacity-80 font-medium">Évolution {activeMetric === 'poids' ? 'poids' : 'masse grasse'}</p>
+              <p className="text-sm text-white/80 font-medium">Evolution poids</p>
               <div className="flex items-baseline gap-2 mt-1">
-                <motion.span 
+                <motion.span
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: 'spring' as const, stiffness: 200 }}
                   className="text-5xl font-bold"
                 >
-                  -{evolution}
+                  {evolution != null ? `-${evolution}` : '--'}
                 </motion.span>
-                <span className="text-xl opacity-80">{activeMetric === 'poids' ? 'kg' : '%'}</span>
+                {evolution != null && <span className="text-xl text-white/80">kg</span>}
               </div>
-              <p className="text-sm opacity-80 mt-2">
-                Depuis le début du programme
+              <p className="text-sm text-white/80 mt-2">
+                {evolution != null ? 'Depuis le debut du programme' : 'Pas encore de donnees poids'}
               </p>
             </div>
-            <motion.div 
+            <motion.div
               animate={{ rotate: [0, 10, -10, 0] }}
               transition={{ duration: 2, repeat: Infinity }}
               className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center"
@@ -120,164 +124,133 @@ export default function ClientProgresMobile({ client: _client }: ClientProgresMo
       {/* Stats grid */}
       <motion.div variants={itemVariants}>
         <div className="grid grid-cols-2 gap-3">
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            className="bg-white rounded-2xl p-4 shadow-lg border border-gray-50"
+          <div
+            className="rounded-2xl p-4"
+            style={{ backgroundColor: 'white', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.06)' }}
           >
-            <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center mb-3">
-              <Scale className="text-blue-500" size={22} />
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center mb-2"
+              style={{ backgroundColor: 'rgba(255, 140, 66, 0.1)' }}
+            >
+              <Flame size={20} style={{ color: '#FF8C42' }} />
             </div>
-            <p className="text-2xl font-bold text-gray-800">
-              78.0<span className="text-sm font-normal text-gray-400 ml-1">kg</span>
-            </p>
-            <p className="text-xs text-gray-500 mt-0.5">Poids actuel</p>
-          </motion.div>
-          
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            className="bg-white rounded-2xl p-4 shadow-lg border border-gray-50"
+            <p className="text-2xl font-bold" style={{ color: '#1A2B4A' }}>{streak}</p>
+            <p className="text-xs mt-0.5" style={{ color: '#6B7A8D' }}>Jours de suite</p>
+          </div>
+
+          <div
+            className="rounded-2xl p-4"
+            style={{ backgroundColor: 'white', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.06)' }}
           >
-            <div className="w-11 h-11 rounded-xl bg-green-50 flex items-center justify-center mb-3">
-              <Activity className="text-green-500" size={22} />
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center mb-2"
+              style={{ backgroundColor: 'rgba(255, 140, 66, 0.1)' }}
+            >
+              <Trophy size={20} style={{ color: '#FF8C42' }} />
             </div>
-            <p className="text-2xl font-bold text-gray-800">
-              18.5<span className="text-sm font-normal text-gray-400 ml-1">%</span>
-            </p>
-            <p className="text-xs text-gray-500 mt-0.5">Masse grasse</p>
-          </motion.div>
-          
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            className="bg-white rounded-2xl p-4 shadow-lg border border-gray-50"
-          >
-            <div className="w-11 h-11 rounded-xl bg-orange-50 flex items-center justify-center mb-3">
-              <Flame className="text-orange-500" size={22} />
-            </div>
-            <p className="text-2xl font-bold text-gray-800">12</p>
-            <p className="text-xs text-gray-500 mt-0.5">Jours de suite 🔥</p>
-          </motion.div>
-          
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            className="bg-white rounded-2xl p-4 shadow-lg border border-gray-50"
-          >
-            <div className="w-11 h-11 rounded-xl bg-purple-50 flex items-center justify-center mb-3">
-              <Dumbbell className="text-purple-500" size={22} />
-            </div>
-            <p className="text-2xl font-bold text-gray-800">24</p>
-            <p className="text-xs text-gray-500 mt-0.5">Séances ce mois</p>
-          </motion.div>
+            <p className="text-2xl font-bold" style={{ color: '#1A2B4A' }}>{seancesCeMois}</p>
+            <p className="text-xs mt-0.5" style={{ color: '#6B7A8D' }}>Seances ce mois</p>
+          </div>
         </div>
       </motion.div>
 
       {/* Graphique */}
       <motion.div variants={itemVariants}>
-        <div className="bg-white rounded-3xl p-5 shadow-lg border border-gray-50">
-          <div className="flex items-center justify-between mb-5">
-            <h3 className="font-bold text-gray-800 text-lg">Évolution</h3>
-            <div className="flex bg-gray-100 rounded-xl p-1">
-              {(['poids', 'graisse'] as const).map((metric) => (
-                <button
-                  key={metric}
-                  onClick={() => setActiveMetric(metric)}
-                  className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-                    activeMetric === metric
-                      ? 'bg-white text-gray-800 shadow-sm'
-                      : 'text-gray-500'
-                  }`}
-                >
-                  {metric === 'poids' ? 'Poids' : 'Graisse'}
-                </button>
-              ))}
-            </div>
-          </div>
+        <div
+          className="rounded-3xl p-5"
+          style={{ backgroundColor: 'white', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.06)' }}
+        >
+          <h3 className="font-bold text-lg mb-4" style={{ color: '#1A2B4A' }}>Evolution du poids</h3>
 
-          <div className="h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={poidsData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorMetric" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#00C896" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#00C896" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <XAxis 
-                  dataKey="date" 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fill: '#9CA3AF', fontSize: 12 }}
-                />
-                <YAxis 
-                  hide 
-                  domain={activeMetric === 'poids' ? ['dataMin - 1', 'dataMax + 1'] : ['dataMin - 2', 'dataMax + 2']}
-                />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'white', 
-                    borderRadius: '12px', 
-                    border: 'none',
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
-                  }}
-                  formatter={(value) => [`${value} ${activeMetric === 'poids' ? 'kg' : '%'}`, activeMetric === 'poids' ? 'Poids' : 'Masse grasse']}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey={activeMetric}
-                  stroke="#00C896" 
-                  strokeWidth={3}
-                  fillOpacity={1} 
-                  fill="url(#colorMetric)" 
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
+          {poidsData.length < 2 ? (
+            <div className="h-48 flex items-center justify-center text-sm" style={{ color: '#6B7A8D' }}>
+              Pas encore assez de donnees pour afficher le graphique
+            </div>
+          ) : (
+            <div className="h-48">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={poidsData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorPoids" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#FF8C42" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#FF8C42" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis
+                    dataKey="date"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: '#6B7A8D', fontSize: 12 }}
+                  />
+                  <YAxis hide domain={['dataMin - 1', 'dataMax + 1']} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'white',
+                      borderRadius: '12px',
+                      border: 'none',
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+                    }}
+                    formatter={(value) => [`${value ?? '-'} kg`, 'Poids']}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="poids"
+                    stroke="#FF8C42"
+                    strokeWidth={3}
+                    fillOpacity={1}
+                    fill="url(#colorPoids)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          )}
         </div>
       </motion.div>
 
       {/* Objectifs */}
       <motion.div variants={itemVariants}>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-gray-800">Mes objectifs</h2>
-          <button className="text-[#00C896] text-sm font-bold">
-            Modifier
-          </button>
-        </div>
-
+        <h2 className="text-lg font-bold mb-3" style={{ color: '#1A2B4A' }}>Mes objectifs</h2>
         <div className="space-y-3">
           {objectifs.map((obj, idx) => {
-            const Icon = obj.icone;
             const progress = Math.min(100, ((obj.cible - obj.actuel) / (obj.cible - (obj.cible * 0.9))) * 100);
-            
+
             return (
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: idx * 0.1 }}
-                whileTap={{ scale: 0.98 }}
-                className="bg-white rounded-2xl p-4 shadow-lg border border-gray-50"
+                whileTap={{ scale: 0.97 }}
+                className="rounded-2xl p-4"
+                style={{ backgroundColor: 'white', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.06)' }}
               >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-11 h-11 rounded-xl bg-[#00C896]/10 flex items-center justify-center">
-                    <Icon className="text-[#00C896]" size={22} />
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center"
+                      style={{ backgroundColor: 'rgba(255, 140, 66, 0.1)' }}
+                    >
+                      <Target size={20} style={{ color: '#FF8C42' }} />
+                    </div>
+                    <div>
+                      <p className="font-bold" style={{ color: '#1A2B4A' }}>{obj.nom}</p>
+                      <p className="text-sm" style={{ color: '#6B7A8D' }}>
+                        {obj.actuel} / {obj.cible} {obj.unite}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h4 className="font-bold text-gray-800">{obj.nom}</h4>
-                    <p className="text-sm text-gray-500">
-                      {obj.actuel} / {obj.cible} {obj.unite}
-                    </p>
-                  </div>
-                  <span className="text-lg font-bold text-[#00C896]">
+                  <span className="text-lg font-bold" style={{ color: '#FF8C42' }}>
                     {Math.round(progress)}%
                   </span>
                 </div>
-                
-                <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
+
+                <div className="h-2.5 rounded-full overflow-hidden" style={{ backgroundColor: '#F0FAF7' }}>
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${progress}%` }}
-                    transition={{ duration: 0.8, delay: 0.3 }}
-                    className="h-full bg-gradient-to-r from-[#00C896] to-[#00E5FF] rounded-full"
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    className="h-full rounded-full"
+                    style={{ background: 'linear-gradient(90deg, #00C896, #FF8C42)' }}
                   />
                 </div>
               </motion.div>
@@ -289,8 +262,8 @@ export default function ClientProgresMobile({ client: _client }: ClientProgresMo
       {/* Badges gamification */}
       <motion.div variants={itemVariants}>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-gray-800">Mes badges</h2>
-          <span className="text-sm text-gray-500">
+          <h2 className="text-lg font-bold" style={{ color: '#1A2B4A' }}>Mes badges</h2>
+          <span className="text-sm" style={{ color: '#6B7A8D' }}>
             {badges.filter(b => b.obtenu).length}/{badges.length}
           </span>
         </div>
@@ -305,30 +278,40 @@ export default function ClientProgresMobile({ client: _client }: ClientProgresMo
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: idx * 0.05 }}
                 whileTap={{ scale: 0.9 }}
-                className={`flex-shrink-0 w-28 h-32 rounded-2xl flex flex-col items-center justify-center gap-2 border-2 transition-all ${
-                  badge.obtenu 
-                    ? `bg-white border-transparent shadow-lg ${badge.couleur}` 
-                    : 'bg-gray-50 border-gray-200 border-dashed'
-                }`}
+                className="flex-shrink-0 w-28 h-32 rounded-2xl flex flex-col items-center justify-center gap-2 relative"
+                style={{
+                  backgroundColor: badge.obtenu ? '#FF8C42' : '#F0FAF7',
+                  boxShadow: badge.obtenu ? '0 4px 15px rgba(255, 140, 66, 0.3)' : 'none'
+                }}
               >
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${badge.obtenu ? badge.couleur : 'bg-gray-200 text-gray-400'}`}>
-                  <Icon size={24} />
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center"
+                  style={{ backgroundColor: badge.obtenu ? 'rgba(255, 255, 255, 0.2)' : 'white' }}
+                >
+                  <Icon size={24} style={{ color: badge.obtenu ? 'white' : '#6B7A8D' }} />
                 </div>
                 <div className="text-center">
-                  <p className={`text-xs font-bold ${badge.obtenu ? 'text-gray-800' : 'text-gray-400'}`}>
+                  <p
+                    className="text-xs font-bold"
+                    style={{ color: badge.obtenu ? 'white' : '#1A2B4A' }}
+                  >
                     {badge.nom}
                   </p>
-                  <p className={`text-[10px] ${badge.obtenu ? 'text-gray-500' : 'text-gray-400'}`}>
+                  <p
+                    className="text-[10px]"
+                    style={{ color: badge.obtenu ? 'rgba(255,255,255,0.8)' : '#6B7A8D' }}
+                  >
                     {badge.desc}
                   </p>
                 </div>
                 {badge.obtenu && (
-                  <motion.div 
+                  <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center"
+                    className="absolute -top-1 -right-1 w-5 h-5 bg-white rounded-full flex items-center justify-center"
+                    style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
                   >
-                    <Star size={10} className="text-white" fill="white" />
+                    <Star size={10} style={{ color: '#FF8C42' }} fill="#FF8C42" />
                   </motion.div>
                 )}
               </motion.div>
@@ -337,14 +320,15 @@ export default function ClientProgresMobile({ client: _client }: ClientProgresMo
         </div>
       </motion.div>
 
-      {/* Photos avant/après */}
+      {/* Photos evolution */}
       <motion.div variants={itemVariants}>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-gray-800">Photos évolution</h2>
-          <motion.button 
-            whileTap={{ scale: 0.95 }}
+          <h2 className="text-lg font-bold" style={{ color: '#1A2B4A' }}>Photos evolution</h2>
+          <motion.button
+            whileTap={{ scale: 0.97 }}
             onClick={() => setShowPhotos(!showPhotos)}
-            className="flex items-center gap-1 text-[#00C896] text-sm font-bold"
+            className="flex items-center gap-1 text-sm font-semibold"
+            style={{ color: '#FF8C42' }}
           >
             <Camera size={16} />
             {showPhotos ? 'Masquer' : 'Voir'}
@@ -356,51 +340,62 @@ export default function ClientProgresMobile({ client: _client }: ClientProgresMo
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="bg-white rounded-3xl p-5 shadow-lg border border-gray-50"
+            className="rounded-3xl p-5"
+            style={{ backgroundColor: 'white', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.06)' }}
           >
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm font-semibold text-gray-600 mb-2">Janvier 2024</p>
-                <div className="aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center border-2 border-dashed border-gray-300">
+                <p className="text-sm font-semibold mb-2" style={{ color: '#6B7A8D' }}>Avant</p>
+                <div
+                  className="aspect-[3/4] rounded-2xl flex items-center justify-center border-2 border-dashed"
+                  style={{ borderColor: '#E0E0E0', backgroundColor: '#F8FAFB' }}
+                >
                   <div className="text-center">
-                    <Camera size={32} className="text-gray-400 mx-auto mb-2" />
-                    <p className="text-xs text-gray-400">Avant</p>
+                    <Camera size={32} style={{ color: '#6B7A8D' }} className="mx-auto mb-2" />
+                    <p className="text-xs" style={{ color: '#6B7A8D' }}>Avant</p>
                   </div>
                 </div>
               </div>
               <div>
-                <p className="text-sm font-semibold text-[#00C896] mb-2">Mars 2024</p>
-                <div className="aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center border-2 border-dashed border-gray-300">
+                <p className="text-sm font-semibold mb-2" style={{ color: '#FF8C42' }}>Maintenant</p>
+                <div
+                  className="aspect-[3/4] rounded-2xl flex items-center justify-center border-2 border-dashed"
+                  style={{ borderColor: '#E0E0E0', backgroundColor: '#F8FAFB' }}
+                >
                   <div className="text-center">
-                    <Camera size={32} className="text-gray-400 mx-auto mb-2" />
-                    <p className="text-xs text-gray-400">Après</p>
+                    <Camera size={32} style={{ color: '#6B7A8D' }} className="mx-auto mb-2" />
+                    <p className="text-xs" style={{ color: '#6B7A8D' }}>Apres</p>
                   </div>
                 </div>
               </div>
             </div>
             <motion.button
-              whileTap={{ scale: 0.98 }}
-              className="w-full mt-4 py-3 bg-[#00C896]/10 text-[#00C896] rounded-xl font-bold"
+              whileTap={{ scale: 0.97 }}
+              className="w-full mt-4 py-3 rounded-full font-bold"
+              style={{ backgroundColor: 'rgba(255, 140, 66, 0.1)', color: '#FF8C42' }}
             >
               + Ajouter une photo
             </motion.button>
           </motion.div>
         ) : (
-          <motion.div 
-            whileTap={{ scale: 0.98 }}
+          <motion.div
+            whileTap={{ scale: 0.97 }}
             onClick={() => setShowPhotos(true)}
-            className="bg-white rounded-2xl p-5 shadow-lg border border-gray-50 flex items-center justify-between cursor-pointer"
+            className="rounded-2xl p-5 flex items-center justify-between cursor-pointer"
+            style={{ backgroundColor: 'white', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.06)' }}
           >
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-purple-50 flex items-center justify-center">
-                <Camera className="text-purple-500" size={22} />
+              <div
+                className="w-11 h-11 rounded-xl flex items-center justify-center"
+                style={{ backgroundColor: 'rgba(255, 140, 66, 0.1)' }}
+              >
+                <Camera size={22} style={{ color: '#FF8C42' }} />
               </div>
               <div>
-                <p className="font-bold text-gray-800">Photos de suivi</p>
-                <p className="text-sm text-gray-500">2 photos enregistrées</p>
+                <p className="font-bold" style={{ color: '#1A2B4A' }}>Photos de suivi</p>
+                <p className="text-sm" style={{ color: '#6B7A8D' }}>Ajouter des photos</p>
               </div>
             </div>
-            <ChevronRight className="text-gray-400" size={20} />
           </motion.div>
         )}
       </motion.div>
