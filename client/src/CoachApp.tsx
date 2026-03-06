@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { User } from '@supabase/supabase-js';
 import {
   LayoutDashboard,
   Users,
@@ -42,15 +41,32 @@ const navItems = [
   { path: '/app/settings', icon: Settings, label: 'Paramètres' },
 ];
 
+interface CoachInfo {
+  prenom: string;
+  nom: string;
+  photo_url?: string | null;
+}
+
 export default function CoachApp() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
+  const [coach, setCoach] = useState<CoachInfo | null>(null);
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return;
+      // Récupère les vraies infos depuis la table coachs
+      const { data } = await supabase
+        .from('coachs')
+        .select('prenom, nom, photo_url')
+        .eq('id', user.id)
+        .maybeSingle();
+      if (data) {
+        // Évite d'afficher "Nouveau" si c'est la valeur par défaut
+        const prenom = data.prenom === 'Nouveau' ? '' : data.prenom;
+        setCoach({ prenom, nom: data.nom === 'Coach' ? '' : data.nom, photo_url: (data as any).photo_url });
+      }
     });
   }, []);
 
@@ -189,30 +205,42 @@ export default function CoachApp() {
             </div>
 
             <div className="flex items-center gap-4">
+              {/* Cloche sans badge — notifications à venir */}
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="relative p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                title="Notifications bientôt disponibles"
+                className="relative p-2 hover:bg-gray-100 dark:hover:bg-[#243044] rounded-xl transition-colors"
               >
-                <Bell size={20} className="text-gray-600 dark:text-gray-400" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+                <Bell size={20} className="text-gray-400 dark:text-[#8896A8]" />
               </motion.button>
 
+              {/* Avatar + nom du coach */}
               <motion.div
                 whileHover={{ scale: 1.05 }}
-                className="flex items-center gap-3 pl-4 border-l border-gray-200 dark:border-slate-800"
+                className="flex items-center gap-3 pl-4 border-l border-gray-200 dark:border-[#2E3D55] cursor-pointer"
+                onClick={() => navigate('/app/settings')}
+                title="Mes paramètres"
               >
-                <div
-                  className="w-9 h-9 rounded-full flex items-center justify-center text-white font-medium"
-                  style={{ background: '#00C896' }}
-                >
-                  {user?.user_metadata?.prenom?.[0] || 'C'}
-                </div>
+                {(coach as any)?.photo_url ? (
+                  <img
+                    src={(coach as any).photo_url}
+                    alt="Avatar"
+                    className="w-9 h-9 rounded-full object-cover border-2 border-emerald-400"
+                  />
+                ) : (
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold text-sm"
+                    style={{ background: '#00C896' }}
+                  >
+                    {coach?.prenom?.[0]?.toUpperCase() || coach?.nom?.[0]?.toUpperCase() || '?'}
+                  </div>
+                )}
                 <div className="hidden md:block">
-                  <p className="text-sm font-medium text-gray-800 dark:text-white">
-                    {user?.user_metadata?.prenom || 'Coach'}
+                  <p className="text-sm font-medium text-gray-800 dark:text-[#E8EDF5]">
+                    {coach?.prenom || coach?.nom || 'Mon profil'}
                   </p>
-                  <p className="text-xs text-gray-500">Coach</p>
+                  <p className="text-xs text-gray-500 dark:text-[#8896A8]">Coach</p>
                 </div>
               </motion.div>
             </div>

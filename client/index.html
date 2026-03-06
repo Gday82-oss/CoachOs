@@ -2,13 +2,55 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MyCareCoach - Le système d'exploitation des coachs sportifs</title>
-    <meta name="description" content="Gérez vos clients, programmes, séances et paiements en un seul endroit. La plateforme tout-en-un pour coachs sportifs." />
+    <link rel="icon" type="image/png" href="/icon-192x192.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#00C896" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#00C896" media="(prefers-color-scheme: dark)" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="MyCareCoach" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="MyCareCoach" />
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/icon-192x192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="167x167" href="/icon-192x192.png" />
+
+    <!-- Splash Screens for iOS -->
+    <link rel="apple-touch-startup-image" href="/icon-512x512.png" />
+
+    <!-- Microsoft -->
+    <meta name="msapplication-TileColor" content="#00C896" />
+    <meta name="msapplication-TileImage" content="/icon-192x192.png" />
+
+    <!-- SEO -->
+    <title>MyCareCoach - Votre compagnon sport-santé</title>
+    <meta name="description" content="Suivez vos séances, programmes et progrès avec votre coach personnel. La plateforme sport-santé qui vous accompagne au quotidien." />
+    <meta name="keywords" content="sport, santé, coach, fitness, programme, entraînement, suivi" />
+    <meta name="author" content="MyCareCoach" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="MyCareCoach - Votre compagnon sport-santé" />
+    <meta property="og:description" content="Suivez vos séances, programmes et progrès avec votre coach personnel." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/icon-512x512.png" />
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    
+    <!-- Preload critical assets -->
+    <link rel="preload" as="image" href="/icon-192x192.png" />
   </head>
   <body>
     <div id="root"></div>

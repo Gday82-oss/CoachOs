@@ -83,8 +83,8 @@ export default function Metriques() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Métriques</h1>
-          <p className="text-gray-600 mt-1">Suivi de la progression</p>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-[#E8EDF5]">Métriques</h1>
+          <p className="text-gray-600 dark:text-[#A8B4C4] mt-1">Suivi de la progression</p>
         </div>
         <button onClick={() => setShowAddModal(true)} className="flex items-center gap-2 bg-emerald-500 text-white px-6 py-3 rounded-xl hover:bg-emerald-600 shadow-lg shadow-emerald-500/25">
           <Plus size={20} />
@@ -97,7 +97,7 @@ export default function Metriques() {
         <select 
           value={selectedClient} 
           onChange={(e) => setSelectedClient(e.target.value)}
-          className="px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500"
+          className="px-4 py-2 border border-gray-200 dark:border-[#2E3D55] rounded-xl focus:ring-2 focus:ring-emerald-500"
         >
           <option value="">Tous les clients</option>
           {clients.map(c => <option key={c.id} value={c.id}>{c.prenom} {c.nom}</option>)}
@@ -107,7 +107,7 @@ export default function Metriques() {
       {/* Graphiques */}
       {metriques.length > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white dark:bg-[#1A2535] rounded-xl shadow-sm border border-gray-100 dark:border-[#2E3D55] p-6">
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <Scale size={20} className="text-emerald-500" />
               Évolution du poids
@@ -123,7 +123,7 @@ export default function Metriques() {
             </ResponsiveContainer>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white dark:bg-[#1A2535] rounded-xl shadow-sm border border-gray-100 dark:border-[#2E3D55] p-6">
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <Heart size={20} className="text-red-500" />
               Énergie & Sommeil
@@ -143,19 +143,19 @@ export default function Metriques() {
       )}
 
       {/* Liste des métriques */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-6 border-b border-gray-100">
+      <div className="bg-white dark:bg-[#1A2535] rounded-xl shadow-sm border border-gray-100 dark:border-[#2E3D55] overflow-hidden">
+        <div className="p-6 border-b border-gray-100 dark:border-[#2E3D55]">
           <h2 className="text-lg font-semibold">Historique des mesures</h2>
         </div>
         
         {metriques.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">
+          <div className="p-8 text-center text-gray-500 dark:text-[#8896A8]">
             Aucune métrique enregistrée
           </div>
         ) : (
           <div className="divide-y divide-gray-100">
             {metriques.slice().reverse().map((m) => (
-              <div key={m.id} className="p-4 hover:bg-gray-50">
+              <div key={m.id} className="p-4 hover:bg-gray-50 dark:bg-[#0F1923]">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
@@ -163,12 +163,12 @@ export default function Metriques() {
                     </div>
                     <div>
                       <p className="font-medium">{new Date(m.date).toLocaleDateString('fr-FR')}</p>
-                      {m.client && <p className="text-sm text-gray-500">{m.client.prenom} {m.client.nom}</p>}
+                      {m.client && <p className="text-sm text-gray-500 dark:text-[#8896A8]">{m.client.prenom} {m.client.nom}</p>}
                     </div>
                   </div>
                   
                   <div className="flex gap-6 text-sm">
-                    {m.poids && <span className="text-gray-600"><strong>{m.poids}kg</strong></span>}
+                    {m.poids && <span className="text-gray-600 dark:text-[#A8B4C4]"><strong>{m.poids}kg</strong></span>}
                     {m.niveau_energie && <span className="text-amber-600">Énergie: {m.niveau_energie}/10</span>}
                     {m.qualite_sommeil && <span className="text-purple-600">Sommeil: {m.qualite_sommeil}/10</span>}
                   </div>
@@ -182,7 +182,7 @@ export default function Metriques() {
       {/* Add Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-2xl p-8 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-[#1A2535] rounded-2xl p-8 w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl font-bold mb-6">Nouvelles métriques</h2>
             <form onSubmit={async (e) => {
               e.preventDefault();
@@ -268,7 +268,7 @@ export default function Metriques() {
               </div>
 
               <div className="flex gap-3 mt-8">
-                <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 py-3 border border-gray-300 rounded-xl hover:bg-gray-50">Annuler</button>
+                <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 dark:bg-[#0F1923]">Annuler</button>
                 <button type="submit" className="flex-1 py-3 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600">Enregistrer</button>
               </div>
             </form>

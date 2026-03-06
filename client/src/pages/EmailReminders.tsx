@@ -159,7 +159,7 @@ export default function EmailReminders() {
       case 'envoye': return 'bg-green-100 text-green-700';
       case 'en_attente': return 'bg-yellow-100 text-yellow-700';
       case 'erreur': return 'bg-red-100 text-red-700';
-      default: return 'bg-gray-100 text-gray-700';
+      default: return 'bg-gray-100 dark:bg-[#243044] text-gray-700 dark:text-[#D4DAE6]';
     }
   };
 
@@ -182,13 +182,13 @@ export default function EmailReminders() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Email Reminders</h1>
-          <p className="text-gray-600 mt-1">Automatisation des rappels clients</p>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-[#E8EDF5]">Email Reminders</h1>
+          <p className="text-gray-600 dark:text-[#A8B4C4] mt-1">Automatisation des rappels clients</p>
         </div>
         <div className="flex gap-3">
           <button 
             onClick={() => setShowConfig(true)}
-            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50"
+            className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-[#2E3D55] rounded-xl hover:bg-gray-50 dark:bg-[#0F1923]"
           >
             <Settings size={18} />
             Configuration
@@ -206,49 +206,49 @@ export default function EmailReminders() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white dark:bg-[#1A2535] rounded-xl shadow-sm border border-gray-100 dark:border-[#2E3D55] p-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
               <Mail className="text-blue-600" size={20} />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Total envoyés</p>
+              <p className="text-sm text-gray-500 dark:text-[#8896A8]">Total envoyés</p>
               <p className="text-2xl font-bold">{logs.length}</p>
             </div>
           </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white dark:bg-[#1A2535] rounded-xl shadow-sm border border-gray-100 dark:border-[#2E3D55] p-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
               <Check className="text-green-600" size={20} />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Envoyés</p>
+              <p className="text-sm text-gray-500 dark:text-[#8896A8]">Envoyés</p>
               <p className="text-2xl font-bold">{logs.filter(l => l.statut === 'envoye').length}</p>
             </div>
           </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white dark:bg-[#1A2535] rounded-xl shadow-sm border border-gray-100 dark:border-[#2E3D55] p-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
               <Clock className="text-yellow-600" size={20} />
             </div>
             <div>
-              <p className="text-sm text-gray-500">En attente</p>
+              <p className="text-sm text-gray-500 dark:text-[#8896A8]">En attente</p>
               <p className="text-2xl font-bold">{logs.filter(l => l.statut === 'en_attente').length}</p>
             </div>
           </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-white dark:bg-[#1A2535] rounded-xl shadow-sm border border-gray-100 dark:border-[#2E3D55] p-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
               <X className="text-red-600" size={20} />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Erreurs</p>
+              <p className="text-sm text-gray-500 dark:text-[#8896A8]">Erreurs</p>
               <p className="text-2xl font-bold">{logs.filter(l => l.statut === 'erreur').length}</p>
             </div>
           </div>
@@ -256,33 +256,33 @@ export default function EmailReminders() {
       </div>
 
       {/* Historique */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-6 border-b border-gray-100">
+      <div className="bg-white dark:bg-[#1A2535] rounded-xl shadow-sm border border-gray-100 dark:border-[#2E3D55] overflow-hidden">
+        <div className="p-6 border-b border-gray-100 dark:border-[#2E3D55]">
           <h2 className="text-lg font-semibold">Historique des emails</h2>
         </div>
 
         {logs.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">
+          <div className="p-8 text-center text-gray-500 dark:text-[#8896A8]">
             Aucun email envoyé pour le moment
           </div>
         ) : (
           <div className="divide-y divide-gray-100">
             {logs.map((log) => (
-              <div key={log.id} className="p-4 hover:bg-gray-50">
+              <div key={log.id} className="p-4 hover:bg-gray-50 dark:bg-[#0F1923]">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      log.statut === 'envoye' ? 'bg-green-100' : 'bg-gray-100'
+                      log.statut === 'envoye' ? 'bg-green-100' : 'bg-gray-100 dark:bg-[#243044]'
                     }`}>
-                      <Mail size={18} className={log.statut === 'envoye' ? 'text-green-600' : 'text-gray-600'} />
+                      <Mail size={18} className={log.statut === 'envoye' ? 'text-green-600' : 'text-gray-600 dark:text-[#A8B4C4]'} />
                     </div>
                     <div>
                       <p className="font-medium">{getTypeLabel(log.type)}</p>
                       {log.client && (
-                        <p className="text-sm text-gray-500">{log.client.prenom} {log.client.nom} • {log.client.email}</p>
+                        <p className="text-sm text-gray-500 dark:text-[#8896A8]">{log.client.prenom} {log.client.nom} • {log.client.email}</p>
                       )}
                       {log.seance && (
-                        <p className="text-sm text-gray-400">Séance: {new Date(log.seance.date).toLocaleDateString('fr-FR')} {log.seance.heure?.slice(0, 5)}</p>
+                        <p className="text-sm text-gray-400 dark:text-[#6B7A8D]">Séance: {new Date(log.seance.date).toLocaleDateString('fr-FR')} {log.seance.heure?.slice(0, 5)}</p>
                       )}
                     </div>
                   </div>
@@ -290,7 +290,7 @@ export default function EmailReminders() {
                     <span className={`text-xs px-2 py-1 rounded-full ${getStatutColor(log.statut)}`}>
                       {log.statut}
                     </span>
-                    <span className="text-sm text-gray-400">
+                    <span className="text-sm text-gray-400 dark:text-[#6B7A8D]">
                       {new Date(log.date_envoi).toLocaleString('fr-FR')}
                     </span>
                   </div>
@@ -304,11 +304,11 @@ export default function EmailReminders() {
       {/* Config Modal */}
       {showConfig && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-2xl p-8 w-full max-w-md">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-[#1A2535] rounded-2xl p-8 w-full max-w-md">
             <h2 className="text-2xl font-bold mb-6">Configuration emails</h2>
             
             <div className="space-y-4">
-              <label className="flex items-center gap-3 p-4 border rounded-xl cursor-pointer hover:bg-gray-50">
+              <label className="flex items-center gap-3 p-4 border rounded-xl cursor-pointer hover:bg-gray-50 dark:bg-[#0F1923]">
                 <input 
                   type="checkbox" 
                   checked={config.rappel_24h}
@@ -317,11 +317,11 @@ export default function EmailReminders() {
                 />
                 <div>
                   <p className="font-medium">Rappel 24h avant</p>
-                  <p className="text-sm text-gray-500">Email automatique la veille de la séance</p>
+                  <p className="text-sm text-gray-500 dark:text-[#8896A8]">Email automatique la veille de la séance</p>
                 </div>
               </label>
 
-              <label className="flex items-center gap-3 p-4 border rounded-xl cursor-pointer hover:bg-gray-50">
+              <label className="flex items-center gap-3 p-4 border rounded-xl cursor-pointer hover:bg-gray-50 dark:bg-[#0F1923]">
                 <input 
                   type="checkbox" 
                   checked={config.rappel_1h}
@@ -330,11 +330,11 @@ export default function EmailReminders() {
                 />
                 <div>
                   <p className="font-medium">Rappel 1h avant</p>
-                  <p className="text-sm text-gray-500">Email 1 heure avant la séance</p>
+                  <p className="text-sm text-gray-500 dark:text-[#8896A8]">Email 1 heure avant la séance</p>
                 </div>
               </label>
 
-              <label className="flex items-center gap-3 p-4 border rounded-xl cursor-pointer hover:bg-gray-50">
+              <label className="flex items-center gap-3 p-4 border rounded-xl cursor-pointer hover:bg-gray-50 dark:bg-[#0F1923]">
                 <input 
                   type="checkbox" 
                   checked={config.confirmation_seance}
@@ -343,11 +343,11 @@ export default function EmailReminders() {
                 />
                 <div>
                   <p className="font-medium">Confirmation de séance</p>
-                  <p className="text-sm text-gray-500">Email après chaque séance réalisée</p>
+                  <p className="text-sm text-gray-500 dark:text-[#8896A8]">Email après chaque séance réalisée</p>
                 </div>
               </label>
 
-              <label className="flex items-center gap-3 p-4 border rounded-xl cursor-pointer hover:bg-gray-50">
+              <label className="flex items-center gap-3 p-4 border rounded-xl cursor-pointer hover:bg-gray-50 dark:bg-[#0F1923]">
                 <input 
                   type="checkbox" 
                   checked={config.nouvelle_seance}
@@ -356,13 +356,13 @@ export default function EmailReminders() {
                 />
                 <div>
                   <p className="font-medium">Nouvelle séance planifiée</p>
-                  <p className="text-sm text-gray-500">Email quand une séance est créée</p>
+                  <p className="text-sm text-gray-500 dark:text-[#8896A8]">Email quand une séance est créée</p>
                 </div>
               </label>
             </div>
 
             <div className="flex gap-3 mt-8">
-              <button onClick={() => setShowConfig(false)} className="flex-1 py-3 border border-gray-300 rounded-xl hover:bg-gray-50">
+              <button onClick={() => setShowConfig(false)} className="flex-1 py-3 border border-gray-300 dark:border-[#2E3D55] rounded-xl hover:bg-gray-50 dark:bg-[#0F1923]">
                 Annuler
               </button>
               <button onClick={saveConfig} className="flex-1 py-3 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600">

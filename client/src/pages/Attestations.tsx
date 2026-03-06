@@ -91,8 +91,8 @@ Date d'émission: ${new Date(attestation.date_emission).toLocaleDateString('fr-F
     <div className="p-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Attestations</h1>
-          <p className="text-gray-600 mt-1">Documents pour remboursement mutuelle</p>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-[#E8EDF5]">Attestations</h1>
+          <p className="text-gray-600 dark:text-[#A8B4C4] mt-1">Documents pour remboursement mutuelle</p>
         </div>
         <button onClick={() => setShowGenerateModal(true)} className="flex items-center gap-2 bg-emerald-500 text-white px-6 py-3 rounded-xl hover:bg-emerald-600 shadow-lg shadow-emerald-500/25">
           <Plus size={20} />
@@ -116,12 +116,12 @@ Date d'émission: ${new Date(attestation.date_emission).toLocaleDateString('fr-F
 
       {/* Liste attestations */}
       {attestations.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-xl border border-gray-100">
-          <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="text-center py-16 bg-white dark:bg-[#1A2535] rounded-xl border border-gray-100 dark:border-[#2E3D55]">
+          <div className="w-20 h-20 bg-gray-100 dark:bg-[#243044] rounded-full flex items-center justify-center mx-auto mb-4">
             <FileText size={32} className="text-gray-400" />
           </div>
-          <h3 className="text-lg font-medium text-gray-800 mb-2">Aucune attestation</h3>
-          <p className="text-gray-500 mb-6">Générez votre première attestation pour remboursement</p>
+          <h3 className="text-lg font-medium text-gray-800 dark:text-[#E8EDF5] mb-2">Aucune attestation</h3>
+          <p className="text-gray-500 dark:text-[#8896A8] mb-6">Générez votre première attestation pour remboursement</p>
           <button onClick={() => setShowGenerateModal(true)} className="inline-flex items-center gap-2 bg-emerald-500 text-white px-6 py-3 rounded-xl hover:bg-emerald-600">
             <Plus size={20} />
             Générer attestation
@@ -135,7 +135,7 @@ Date d'émission: ${new Date(attestation.date_emission).toLocaleDateString('fr-F
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+              className="bg-white dark:bg-[#1A2535] rounded-xl shadow-sm border border-gray-100 dark:border-[#2E3D55] p-6"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
@@ -143,14 +143,14 @@ Date d'émission: ${new Date(attestation.date_emission).toLocaleDateString('fr-F
                     <FileText className="text-emerald-600" size={24} />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-800">{moisNoms[att.mois - 1]} {att.annee}</h3>
-                    {att.client && <p className="text-sm text-gray-500">{att.client.prenom} {att.client.nom}</p>}
+                    <h3 className="font-semibold text-gray-800 dark:text-[#E8EDF5]">{moisNoms[att.mois - 1]} {att.annee}</h3>
+                    {att.client && <p className="text-sm text-gray-500 dark:text-[#8896A8]">{att.client.prenom} {att.client.nom}</p>}
                   </div>
                 </div>
                 <span className="text-emerald-600 font-semibold">{att.montant_total}€</span>
               </div>
 
-              <div className="space-y-2 text-sm text-gray-600 mb-4">
+              <div className="space-y-2 text-sm text-gray-600 dark:text-[#A8B4C4] mb-4">
                 <div className="flex items-center gap-2">
                   <Calendar size={16} />
                   <span>{att.nombre_seances} séances</span>
@@ -176,7 +176,7 @@ Date d'émission: ${new Date(attestation.date_emission).toLocaleDateString('fr-F
       {/* Generate Modal */}
       {showGenerateModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-2xl p-8 w-full max-w-md">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-[#1A2535] rounded-2xl p-8 w-full max-w-md">
             <h2 className="text-2xl font-bold mb-6">Générer attestation</h2>
             <form onSubmit={async (e) => {
               e.preventDefault();
@@ -249,7 +249,7 @@ Date d'émission: ${new Date(attestation.date_emission).toLocaleDateString('fr-F
               </div>
 
               <div className="flex gap-3 mt-8">
-                <button type="button" onClick={() => setShowGenerateModal(false)} className="flex-1 py-3 border border-gray-300 rounded-xl hover:bg-gray-50">Annuler</button>
+                <button type="button" onClick={() => setShowGenerateModal(false)} className="flex-1 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 dark:bg-[#0F1923]">Annuler</button>
                 <button type="submit" className="flex-1 py-3 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600">Générer</button>
               </div>
             </form>

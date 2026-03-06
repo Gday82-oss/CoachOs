@@ -68,13 +68,25 @@ export default function Auth({ initialMode = 'login' }: AuthProps) {
 
     try {
       if (isLogin) {
-        // Connexion
-        const { error } = await supabase.auth.signInWithPassword({
+        // Connexion — redirige selon le rôle (client ou coach)
+        const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
         if (error) throw error;
-        navigate('/app');
+
+        // Vérifie si l'email appartient à un client
+        const { data: clientData } = await supabase
+          .from('clients_coach')
+          .select('id')
+          .eq('email', data.user?.email ?? '')
+          .maybeSingle();
+
+        if (clientData) {
+          navigate('/client');
+        } else {
+          navigate('/app');
+        }
       } else {
         // Inscription
         const { error } = await supabase.auth.signUp({

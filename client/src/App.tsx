@@ -8,6 +8,8 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import CoachApp from './CoachApp';
 import ClientPortal from './pages/ClientPortal';
+import ClientApp from './ClientApp';
+import ClientLogin from './pages/client-mobile/ClientLogin';
 
 function ForgotPasswordWrapper() {
   const navigate = useNavigate();
@@ -97,6 +99,21 @@ function App() {
             : userType === 'client'
               ? <ClientPortal />
               : <CoachApp />
+        }
+      />
+
+      {/* Page de connexion client (publique) */}
+      <Route path="/client/login" element={<ClientLogin />} />
+
+      {/* Interface client mobile-first PWA */}
+      <Route
+        path="/client/*"
+        element={
+          !user
+            ? <Navigate to="/client/login" replace />
+            : userType === 'client'
+              ? <ClientApp />
+              : <Navigate to="/app" replace />
         }
       />
 

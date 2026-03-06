@@ -88,8 +88,8 @@ export default function Seances() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Agenda</h1>
-          <p className="text-gray-600 mt-1">Planifiez vos séances</p>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-[#E8EDF5]">Agenda</h1>
+          <p className="text-gray-600 dark:text-[#A8B4C4] mt-1">Planifiez vos séances</p>
         </div>
         <button onClick={() => setShowAddModal(true)} className="flex items-center gap-2 bg-emerald-500 text-white px-6 py-3 rounded-xl hover:bg-emerald-600 shadow-lg shadow-emerald-500/25">
           <Plus size={20} />
@@ -97,19 +97,19 @@ export default function Seances() {
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-white dark:bg-[#1A2535] rounded-xl shadow-sm border border-gray-100 dark:border-[#2E3D55] p-6">
         <div className="flex items-center justify-between mb-6">
-          <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))} className="p-2 hover:bg-gray-100 rounded-lg">
+          <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))} className="p-2 hover:bg-gray-100 dark:bg-[#243044] rounded-lg">
             <ChevronLeft />
           </button>
           <h2 className="text-xl font-semibold">{mois[currentDate.getMonth()]} {currentDate.getFullYear()}</h2>
-          <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))} className="p-2 hover:bg-gray-100 rounded-lg">
+          <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))} className="p-2 hover:bg-gray-100 dark:bg-[#243044] rounded-lg">
             <ChevronRight />
           </button>
         </div>
 
         <div className="grid grid-cols-7 gap-2 mb-2">
-          {jours.map(j => <div key={j} className="text-center text-sm font-medium text-gray-500 py-2">{j}</div>)}
+          {jours.map(j => <div key={j} className="text-center text-sm font-medium text-gray-500 dark:text-[#8896A8] py-2">{j}</div>)}
         </div>
 
         <div className="grid grid-cols-7 gap-2">
@@ -122,17 +122,17 @@ export default function Seances() {
               <motion.div
                 key={idx}
                 whileHover={{ scale: 1.02 }}
-                className={`min-h-[100px] p-2 rounded-lg border ${isToday ? 'border-emerald-500 bg-emerald-50' : 'border-gray-100 hover:border-emerald-200'} cursor-pointer`}
+                className={`min-h-[100px] p-2 rounded-lg border ${isToday ? 'border-emerald-500 bg-emerald-50' : 'border-gray-100 dark:border-[#2E3D55] hover:border-emerald-200'} cursor-pointer`}
                 onClick={() => setShowAddModal(true)}
               >
-                <span className={`text-sm font-medium ${isToday ? 'text-emerald-600' : 'text-gray-700'}`}>{jour}</span>
+                <span className={`text-sm font-medium ${isToday ? 'text-emerald-600' : 'text-gray-700 dark:text-[#D4DAE6]'}`}>{jour}</span>
                 <div className="mt-1 space-y-1">
                   {seancesJour.slice(0, 2).map(s => (
                     <div key={s.id} className={`text-xs p-1 rounded ${s.fait ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'} truncate`}>
                       {s.heure.slice(0, 5)} - {s.client?.prenom}
                     </div>
                   ))}
-                  {seancesJour.length > 2 && <div className="text-xs text-gray-500">+{seancesJour.length - 2}</div>}
+                  {seancesJour.length > 2 && <div className="text-xs text-gray-500 dark:text-[#8896A8]">+{seancesJour.length - 2}</div>}
                 </div>
               </motion.div>
             );
@@ -142,7 +142,7 @@ export default function Seances() {
 
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-2xl p-8 w-full max-w-md">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-[#1A2535] rounded-2xl p-8 w-full max-w-md">
             <h2 className="text-2xl font-bold mb-6">Nouvelle séance</h2>
             <form onSubmit={async (e) => {
               e.preventDefault();
@@ -205,7 +205,7 @@ export default function Seances() {
                 </div>
               </div>
               <div className="flex gap-3 mt-8">
-                <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 py-3 border border-gray-300 rounded-xl hover:bg-gray-50">Annuler</button>
+                <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 dark:bg-[#0F1923]">Annuler</button>
                 <button type="submit" className="flex-1 py-3 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600">Créer</button>
               </div>
             </form>

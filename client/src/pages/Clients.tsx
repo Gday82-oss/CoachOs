@@ -84,7 +84,7 @@ export default function Clients() {
       case 'debutant': return 'bg-green-100 text-green-700';
       case 'intermediaire': return 'bg-yellow-100 text-yellow-700';
       case 'avance': return 'bg-red-100 text-red-700';
-      default: return 'bg-gray-100 text-gray-700';
+      default: return 'bg-gray-100 dark:bg-[#243044] text-gray-700 dark:text-[#D4DAE6]';
     }
   };
 
@@ -101,8 +101,8 @@ export default function Clients() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Clients</h1>
-          <p className="text-gray-600 mt-1">{clients.length} client{clients.length > 1 ? 's' : ''}</p>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-[#E8EDF5]">Clients</h1>
+          <p className="text-gray-600 dark:text-[#A8B4C4] mt-1">{clients.length} client{clients.length > 1 ? 's' : ''}</p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
@@ -116,13 +116,13 @@ export default function Clients() {
       {/* Search */}
       <div className="mb-6">
         <div className="relative max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-[#6B7A8D]" size={20} />
           <input
             type="text"
             placeholder="Rechercher un client..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            className="w-full pl-12 pr-4 py-3 bg-white dark:bg-[#1A2535] border border-gray-200 dark:border-[#2E3D55] rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
           />
         </div>
       </div>
@@ -130,11 +130,11 @@ export default function Clients() {
       {/* Clients Grid */}
       {filteredClients.length === 0 ? (
         <div className="text-center py-16">
-          <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <User size={32} className="text-gray-400" />
+          <div className="w-20 h-20 bg-gray-100 dark:bg-[#243044] rounded-full flex items-center justify-center mx-auto mb-4">
+            <User size={32} className="text-gray-400 dark:text-[#6B7A8D]" />
           </div>
-          <h3 className="text-lg font-medium text-gray-800 mb-2">Aucun client pour le moment</h3>
-          <p className="text-gray-500">Cliquez sur <span className="font-medium text-emerald-600">+ Nouveau client</span> en haut à droite pour commencer</p>
+          <h3 className="text-lg font-medium text-gray-800 dark:text-[#E8EDF5] mb-2">Aucun client pour le moment</h3>
+          <p className="text-gray-500 dark:text-[#8896A8]">Cliquez sur <span className="font-medium text-emerald-600">+ Nouveau client</span> en haut à droite pour commencer</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -144,7 +144,7 @@ export default function Clients() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-[#1A2535] rounded-xl shadow-sm border border-gray-100 dark:border-[#2E3D55] p-6 hover:shadow-md transition-shadow"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
@@ -152,7 +152,7 @@ export default function Clients() {
                     {client.prenom[0]}{client.nom[0]}
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-800">{client.prenom} {client.nom}</h3>
+                    <h3 className="font-semibold text-gray-800 dark:text-[#E8EDF5]">{client.prenom} {client.nom}</h3>
                     <span className={`text-xs px-2 py-1 rounded-full ${getNiveauColor(client.niveau)}`}>
                       {client.niveau}
                     </span>
@@ -161,7 +161,7 @@ export default function Clients() {
                 <div className="flex gap-2">
                   <button 
                     onClick={() => handleDelete(client.id)}
-                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                    className="p-2 text-gray-400 dark:text-[#6B7A8D] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                   >
                     <Trash2 size={18} />
                   </button>
@@ -170,13 +170,13 @@ export default function Clients() {
 
               <div className="space-y-2 text-sm">
                 {client.email && (
-                  <div className="flex items-center gap-2 text-gray-600">
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-[#A8B4C4]">
                     <Mail size={16} />
                     <span>{client.email}</span>
                   </div>
                 )}
                 {client.telephone && (
-                  <div className="flex items-center gap-2 text-gray-600">
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-[#A8B4C4]">
                     <Phone size={16} />
                     <span>{client.telephone}</span>
                   </div>
@@ -191,14 +191,14 @@ export default function Clients() {
                     </span>
                   ))}
                   {client.objectifs.length > 3 && (
-                    <span className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full">
+                    <span className="text-xs px-2 py-1 bg-gray-100 dark:bg-[#243044] text-gray-600 dark:text-[#A8B4C4] rounded-full">
                       +{client.objectifs.length - 3}
                     </span>
                   )}
                 </div>
               )}
 
-              <div className="mt-4 pt-4 border-t border-gray-100 flex gap-2">
+              <div className="mt-4 pt-4 border-t border-gray-100 dark:border-[#2E3D55] flex gap-2">
                 <button 
                   onClick={() => navigate(`/seances?client=${client.id}`)}
                   className="flex-1 py-2 text-sm text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
@@ -223,9 +223,9 @@ export default function Clients() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl p-8 w-full max-w-lg max-h-[90vh] overflow-y-auto"
+            className="bg-white dark:bg-[#1A2535] rounded-2xl p-8 w-full max-w-lg max-h-[90vh] overflow-y-auto"
           >
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Nouveau client</h2>
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-[#E8EDF5] mb-6">Nouveau client</h2>
             
             <form onSubmit={async (e) => {
               e.preventDefault();
@@ -284,33 +284,33 @@ export default function Clients() {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Prénom *</label>
-                    <input name="prenom" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500" />
+                    <label className="block text-sm font-medium text-gray-700 dark:text-[#D4DAE6] mb-1">Prénom *</label>
+                    <input name="prenom" required className="w-full px-4 py-2 border border-gray-300 dark:border-[#2E3D55] rounded-lg focus:ring-2 focus:ring-emerald-500" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Nom *</label>
-                    <input name="nom" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500" />
+                    <label className="block text-sm font-medium text-gray-700 dark:text-[#D4DAE6] mb-1">Nom *</label>
+                    <input name="nom" required className="w-full px-4 py-2 border border-gray-300 dark:border-[#2E3D55] rounded-lg focus:ring-2 focus:ring-emerald-500" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                  <input name="email" type="email" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500" />
+                  <label className="block text-sm font-medium text-gray-700 dark:text-[#D4DAE6] mb-1">Email</label>
+                  <input name="email" type="email" className="w-full px-4 py-2 border border-gray-300 dark:border-[#2E3D55] rounded-lg focus:ring-2 focus:ring-emerald-500" />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
-                  <input name="telephone" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500" />
+                  <label className="block text-sm font-medium text-gray-700 dark:text-[#D4DAE6] mb-1">Téléphone</label>
+                  <input name="telephone" className="w-full px-4 py-2 border border-gray-300 dark:border-[#2E3D55] rounded-lg focus:ring-2 focus:ring-emerald-500" />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Date de naissance</label>
-                  <input name="date_naissance" type="date" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500" />
+                  <label className="block text-sm font-medium text-gray-700 dark:text-[#D4DAE6] mb-1">Date de naissance</label>
+                  <input name="date_naissance" type="date" className="w-full px-4 py-2 border border-gray-300 dark:border-[#2E3D55] rounded-lg focus:ring-2 focus:ring-emerald-500" />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Niveau</label>
-                  <select name="niveau" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-[#D4DAE6] mb-1">Niveau</label>
+                  <select name="niveau" className="w-full px-4 py-2 border border-gray-300 dark:border-[#2E3D55] rounded-lg focus:ring-2 focus:ring-emerald-500">
                     <option value="debutant">Débutant</option>
                     <option value="intermediaire">Intermédiaire</option>
                     <option value="avance">Avancé</option>
@@ -322,7 +322,7 @@ export default function Clients() {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="flex-1 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors"
+                  className="flex-1 py-3 border border-gray-300 dark:border-[#2E3D55] text-gray-700 dark:text-[#D4DAE6] rounded-xl hover:bg-gray-50 dark:bg-[#0F1923] transition-colors"
                 >
                   Annuler
                 </button>

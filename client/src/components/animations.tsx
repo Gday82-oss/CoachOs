@@ -13,7 +13,7 @@ export function AnimatedCard({ children, className = '', delay = 0 }: AnimatedCa
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -5, boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}
-      className={`bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden ${className}`}
+      className={`bg-white dark:bg-[#1A2535] rounded-2xl shadow-lg overflow-hidden ${className}`}
     >
       {children}
     </motion.div>
@@ -91,7 +91,7 @@ export function Skeleton({ className = '' }: { className?: string }) {
     <motion.div
       animate={{ opacity: [0.5, 1, 0.5] }}
       transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-      className={`bg-gray-200 dark:bg-slate-700 rounded ${className}`}
+      className={`bg-gray-200 dark:bg-[#243044] rounded ${className}`}
     />
   );
 }

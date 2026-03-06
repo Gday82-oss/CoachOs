@@ -15,6 +15,8 @@
 /* ── Fonts ────────────────────────────────────────────── */
 body {
   font-family: 'DM Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .font-display {
@@ -37,12 +39,24 @@ body {
   to   { stroke-dashoffset: 0; }
 }
 
+@keyframes slide-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 .animate-pulse-dot  { animation: pulse-dot 2s ease-in-out infinite; }
 .animate-float      { animation: float 4s ease-in-out infinite; }
 .animate-draw-line  {
   stroke-dasharray: 400;
   animation: draw-line 2s ease-out forwards;
 }
+.animate-slide-up   { animation: slide-up 0.5s ease-out forwards; }
+.animate-fade-in    { animation: fade-in 0.3s ease-out forwards; }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
@@ -136,3 +150,145 @@ body {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+/* ── Mobile PWA specific styles ───────────────────────── */
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Safe area for iOS notch */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Touch action optimization */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent text selection on interactive elements */
+.no-select {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Smooth momentum scrolling */
+.momentum-scroll {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: scroll;
+}
+
+/* Mobile card shadows */
+.card-shadow {
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.02),
+    0 4px 12px rgba(0, 0, 0, 0.04),
+    0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+/* Active state for mobile buttons */
+@media (hover: none) {
+  .mobile-active:active {
+    opacity: 0.7;
+    transform: scale(0.98);
+  }
+}
+
+/* iOS specific fixes */
+@supports (-webkit-touch-callout: none) {
+  /* CSS specific to iOS devices */
+  .ios-height-fix {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* Android specific fixes */
+@supports not (-webkit-touch-callout: none) {
+  /* CSS specific to Android devices */
+  .android-height-fix {
+    min-height: 100vh;
+  }
+}
+
+/* Prevent pull-to-refresh on mobile */
+.overscroll-none {
+  overscroll-behavior: none;
+}
+
+/* Line clamp utilities */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Focus visible for accessibility */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #00C896;
+  outline-offset: 2px;
+}
+
+/* Disabled state */
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Custom selection color */
+::selection {
+  background-color: #00C896;
+  color: white;
+}
+
+/* Border radius utilities for mobile */
+.rounded-mobile {
+  border-radius: 24px;
+}
+
+/* Shadow utilities */
+.shadow-card {
+  box-shadow: 0 4px 20px rgba(0, 200, 150, 0.08);
+}
+
+.shadow-float {
+  box-shadow: 0 8px 30px rgba(0, 200, 150, 0.12);
+}
+
+/* Animation delays */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
