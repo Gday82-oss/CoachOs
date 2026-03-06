@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
+import { randomUUID } from 'crypto';
 import type { Request, Response, NextFunction } from 'express';
 import { createClient } from '@supabase/supabase-js';
 
