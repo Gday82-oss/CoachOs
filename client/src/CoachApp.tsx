@@ -44,6 +44,7 @@ const navItems = [
 interface CoachInfo {
   prenom: string;
   nom: string;
+  email: string;
   photo_url?: string | null;
 }
 
@@ -56,17 +57,33 @@ export default function CoachApp() {
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) return;
-      // Récupère les vraies infos depuis la table coachs
+
+      // 1. Récupère depuis la table coachs
       const { data } = await supabase
         .from('coachs')
         .select('prenom, nom, photo_url')
         .eq('id', user.id)
         .maybeSingle();
-      if (data) {
-        // Évite d'afficher "Nouveau" si c'est la valeur par défaut
-        const prenom = data.prenom === 'Nouveau' ? '' : data.prenom;
-        setCoach({ prenom, nom: data.nom === 'Coach' ? '' : data.nom, photo_url: (data as any).photo_url });
+
+      // Ignore les valeurs par défaut "Nouveau" / "Coach"
+      let prenom = (data?.prenom && data.prenom !== 'Nouveau') ? data.prenom : '';
+      let nom    = (data?.nom    && data.nom    !== 'Coach')   ? data.nom    : '';
+
+      // 2. Fallback sur user_metadata (renseigné à l'inscription)
+      if (!prenom) prenom = user.user_metadata?.prenom || '';
+      if (!nom)    nom    = user.user_metadata?.nom    || '';
+
+      // 3. Fallback sur la partie locale de l'email (ex: "jean.dupont")
+      if (!prenom && !nom && user.email) {
+        prenom = user.email.split('@')[0];
       }
+
+      setCoach({
+        prenom,
+        nom,
+        email: user.email || '',
+        photo_url: data?.photo_url ?? null,
+      });
     });
   }, []);
 
@@ -233,12 +250,12 @@ export default function CoachApp() {
                     className="w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold text-sm"
                     style={{ background: '#00C896' }}
                   >
-                    {coach?.prenom?.[0]?.toUpperCase() || coach?.nom?.[0]?.toUpperCase() || '?'}
+                    {(coach?.prenom?.[0] || coach?.nom?.[0] || coach?.email?.[0] || '?').toUpperCase()}
                   </div>
                 )}
                 <div className="hidden md:block">
                   <p className="text-sm font-medium text-gray-800 dark:text-[#E8EDF5]">
-                    {coach?.prenom || coach?.nom || 'Mon profil'}
+                    {coach?.prenom || coach?.nom || coach?.email?.split('@')[0] || 'Mon profil'}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-[#8896A8]">Coach</p>
                 </div>
