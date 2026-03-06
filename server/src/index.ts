@@ -3,8 +3,38 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
 import type { Request, Response, NextFunction } from 'express';
+import { createClient } from '@supabase/supabase-js';
 
 dotenv.config();
+
+// Client Supabase standard (clé publique) — pour vérifier les tokens des coaches
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_ANON_KEY!
+);
+
+// Client Supabase admin (clé secrète) — pour les opérations admin (invite)
+const supabaseAdmin = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
+// Middleware d'authentification — vérifie que c'est bien un coach connecté
+async function authMiddleware(req: Request, res: Response, next: NextFunction) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith('Bearer ')) {
+    res.status(401).json({ error: 'Token manquant' });
+    return;
+  }
+  const token = authHeader.split(' ')[1];
+  const { data: { user }, error } = await supabase.auth.getUser(token);
+  if (error || !user) {
+    res.status(401).json({ error: 'Token invalide' });
+    return;
+  }
+  (req as any).user = user;
+  next();
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -47,6 +77,48 @@ app.get('/', (req, res) => {
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Route d'invitation client
+// Seul un coach connecté peut inviter un client
+app.post('/api/invite-client', authMiddleware, async (req: Request, res: Response) => {
+  const { email, prenom, nom, clientId } = req.body;
+
+  if (!email || !clientId) {
+    res.status(400).json({ error: 'email et clientId sont requis' });
+    return;
+  }
+
+  // Envoie l'invitation via Supabase Auth (clé admin)
+  const { error: inviteError } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
+    data: {
+      role: 'client',
+      prenom: prenom ?? '',
+      nom: nom ?? '',
+    },
+    redirectTo: 'https://mycarecoach.app/client/setup',
+  });
+
+  if (inviteError) {
+    // Si le compte existe déjà, on le marque quand même et on répond OK
+    const alreadyExists =
+      inviteError.message.includes('already been registered') ||
+      inviteError.message.includes('already registered') ||
+      inviteError.message.includes('User already registered');
+
+    if (!alreadyExists) {
+      res.status(400).json({ error: inviteError.message });
+      return;
+    }
+  }
+
+  // Marque le client comme invité dans la table clients
+  await supabaseAdmin
+    .from('clients')
+    .update({ invite_sent: true, invite_sent_at: new Date().toISOString() })
+    .eq('id', clientId);
+
+  res.json({ success: true });
 });
 
 // Error handler (doit être le dernier middleware)

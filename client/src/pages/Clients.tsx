@@ -71,20 +71,28 @@ export default function Clients() {
     setInviteNotif(null);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
 
-      const { error } = await supabase.functions.invoke('invite-client', {
-        body: {
+      // Appel au backend Express (clé secrète stockée côté serveur, jamais dans le navigateur)
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/invite-client`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
           clientId: client.id,
           email: client.email,
           prenom: client.prenom,
           nom: client.nom,
-          coachId: user.id,
-        },
+        }),
       });
 
-      if (error) throw error;
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Erreur lors de l\'invitation');
+      }
 
       // Mise à jour locale immédiate (pas besoin d'attendre le fetch)
       setClients(prev =>
