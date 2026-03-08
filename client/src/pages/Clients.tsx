@@ -152,19 +152,20 @@ export default function Clients() {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6 md:mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-[#E8EDF5]">Clients</h1>
+          <h1 className="text-xl md:text-3xl font-bold text-gray-800 dark:text-[#E8EDF5]">Clients</h1>
           <p className="text-gray-600 dark:text-[#A8B4C4] mt-1">{clients.length} client{clients.length > 1 ? 's' : ''}</p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 bg-emerald-500 text-white px-6 py-3 rounded-xl hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-500/25"
+          className="flex items-center gap-2 bg-emerald-500 text-white px-4 md:px-6 py-3 min-h-[44px] rounded-xl hover:bg-emerald-600 active:bg-emerald-700 transition-colors shadow-lg shadow-emerald-500/25 text-sm md:text-base font-medium"
         >
-          <Plus size={20} />
-          Nouveau client
+          <Plus size={18} />
+          <span className="hidden sm:inline">Nouveau client</span>
+          <span className="sm:hidden">Ajouter</span>
         </button>
       </div>
 
@@ -269,13 +270,13 @@ export default function Clients() {
               <div className="mt-4 pt-4 border-t border-gray-100 dark:border-[#2E3D55] flex gap-2">
                 <button
                   onClick={() => navigate(`/seances?client=${client.id}`)}
-                  className="flex-1 py-2 text-sm text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                  className="flex-1 py-2.5 min-h-[44px] text-sm text-emerald-600 hover:bg-emerald-50 active:bg-emerald-100 rounded-lg transition-colors font-medium"
                 >
                   Planifier
                 </button>
                 <button
                   onClick={() => navigate(`/programmes?client=${client.id}`)}
-                  className="flex-1 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  className="flex-1 py-2.5 min-h-[44px] text-sm text-blue-600 hover:bg-blue-50 active:bg-blue-100 rounded-lg transition-colors font-medium"
                 >
                   Programme
                 </button>
@@ -288,14 +289,14 @@ export default function Clients() {
                     : client.invite_sent ? 'Invitation déjà envoyée'
                     : 'Envoyer une invitation par email'
                   }
-                  className={`flex-1 py-2 text-sm rounded-lg transition-colors flex items-center justify-center gap-1 ${
+                  className={`flex-1 py-2.5 min-h-[44px] text-sm rounded-lg transition-colors flex items-center justify-center gap-1 font-medium ${
                     client.has_account
                       ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
                       : client.invite_sent
                         ? 'text-[#00C896] bg-[#00C896]/10 cursor-default'
                         : !client.email
                           ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
-                          : 'text-[#00C896] hover:bg-[#00C896]/10'
+                          : 'text-[#00C896] hover:bg-[#00C896]/10 active:bg-[#00C896]/20'
                   }`}
                 >
                   {inviting === client.id ? (
@@ -314,15 +315,17 @@ export default function Clients() {
 
       {/* Add Client Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <motion.div 
+        <div className="fixed inset-0 bg-black/50 z-50 flex md:items-center md:justify-center">
+          <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white dark:bg-[#1A2535] rounded-2xl p-8 w-full max-w-lg max-h-[90vh] overflow-y-auto"
+            className="bg-white dark:bg-[#1A2535] md:rounded-2xl w-full h-full md:h-auto md:max-w-lg md:max-h-[90vh] flex flex-col"
           >
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-[#E8EDF5] mb-6">Nouveau client</h2>
-            
-            <form onSubmit={async (e) => {
+            <div className="p-6 md:p-8 border-b border-gray-100 dark:border-[#2E3D55] flex-shrink-0">
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-[#E8EDF5]">Nouveau client</h2>
+            </div>
+
+            <form className="flex flex-col flex-1 min-h-0" onSubmit={async (e) => {
               e.preventDefault();
               try {
                 const { data: { user } } = await supabase.auth.getUser();
@@ -376,6 +379,7 @@ export default function Clients() {
                 alert(`Erreur lors de la création : ${error?.message || error?.error_description || JSON.stringify(error)}`);
               }
             }}>
+              <div className="overflow-y-auto flex-1 p-6 md:p-8">
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -412,8 +416,9 @@ export default function Clients() {
                   </select>
                 </div>
               </div>
+              </div>
 
-              <div className="flex gap-3 mt-8">
+              <div className="border-t border-gray-100 dark:border-[#2E3D55] p-4 md:p-6 flex gap-3 flex-shrink-0">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}

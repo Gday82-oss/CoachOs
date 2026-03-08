@@ -359,7 +359,7 @@ export default function Dashboard() {
   // ─────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="p-8 max-w-7xl mx-auto space-y-8">
+      <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
         {/* Header skeleton */}
         <div className="flex items-start justify-between">
           <div className="space-y-2">
@@ -416,12 +416,12 @@ export default function Dashboard() {
   // RENDU PRINCIPAL
   // ─────────────────────────────────────────────
   return (
-    <div className="p-8 max-w-7xl mx-auto">
+    <div className="p-4 md:p-8 max-w-7xl mx-auto">
 
       {/* ── Header ───────────────────────────── */}
-      <div className="mb-8 flex items-start justify-between">
+      <div className="mb-6 md:mb-8 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-[#E8EDF5]">
+          <h1 className="text-xl md:text-3xl font-bold text-gray-800 dark:text-[#E8EDF5]">
             {salutation}{prenom ? `, ${prenom}` : ''} 👋
           </h1>
           <p className="text-gray-500 dark:text-[#8896A8] mt-1">Voici un résumé de votre activité</p>

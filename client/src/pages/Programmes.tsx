@@ -78,10 +78,10 @@ export default function Programmes() {
   if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div></div>;
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-4 md:p-8">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6 md:mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-[#E8EDF5]">Programmes</h1>
+          <h1 className="text-xl md:text-3xl font-bold text-gray-800 dark:text-[#E8EDF5]">Programmes</h1>
           <p className="text-gray-600 dark:text-[#A8B4C4] mt-1">{programmes.length} programme{programmes.length > 1 ? 's' : ''}</p>
         </div>
         <button onClick={() => setShowAddModal(true)} className="flex items-center gap-2 bg-emerald-500 text-white px-6 py-3 rounded-xl hover:bg-emerald-600 shadow-lg shadow-emerald-500/25">
@@ -147,10 +147,12 @@ export default function Programmes() {
 
       {/* Add Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-[#1A2535] rounded-2xl p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <h2 className="text-2xl font-bold mb-6">Nouveau programme</h2>
-            <form onSubmit={async (e) => {
+        <div className="fixed inset-0 bg-black/50 z-50 flex md:items-center md:justify-center">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-[#1A2535] md:rounded-2xl w-full h-full md:h-auto md:max-w-2xl md:max-h-[90vh] flex flex-col">
+            <div className="p-6 md:p-8 border-b border-gray-100 dark:border-[#2E3D55] flex-shrink-0">
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-[#E8EDF5]">Nouveau programme</h2>
+            </div>
+            <form className="flex flex-col flex-1 min-h-0" onSubmit={async (e) => {
               e.preventDefault();
               const form = e.target as HTMLFormElement;
               const formData = new FormData(form);
@@ -182,6 +184,7 @@ export default function Programmes() {
               setShowAddModal(false);
               fetchData();
             }}>
+              <div className="overflow-y-auto flex-1 p-6 md:p-8">
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium mb-1">Titre *</label>
@@ -212,9 +215,10 @@ export default function Programmes() {
                   <textarea name="contenu" required rows={10} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500" placeholder="Semaine 1:..." />
                 </div>
               </div>
+              </div>
 
-              <div className="flex gap-3 mt-8">
-                <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 py-3 border border-gray-300 dark:border-[#2E3D55] rounded-xl hover:bg-gray-50 dark:bg-[#0F1923]">Annuler</button>
+              <div className="border-t border-gray-100 dark:border-[#2E3D55] p-4 md:p-6 flex gap-3 flex-shrink-0">
+                <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 py-3 border border-gray-300 dark:border-[#2E3D55] text-gray-700 dark:text-[#D4DAE6] rounded-xl hover:bg-gray-50 dark:bg-[#0F1923]">Annuler</button>
                 <button type="submit" className="flex-1 py-3 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600">Créer</button>
               </div>
             </form>
@@ -224,29 +228,31 @@ export default function Programmes() {
 
       {/* View Modal */}
       {showViewModal && selectedProgramme && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-[#1A2535] rounded-2xl p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start justify-between mb-6">
+        <div className="fixed inset-0 bg-black/50 z-50 flex md:items-center md:justify-center">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-[#1A2535] md:rounded-2xl w-full h-full md:h-auto md:max-w-2xl md:max-h-[90vh] flex flex-col">
+            <div className="p-6 md:p-8 border-b border-gray-100 dark:border-[#2E3D55] flex-shrink-0 flex items-start justify-between">
               <div>
-                <h2 className="text-2xl font-bold">{selectedProgramme.titre}</h2>
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-[#E8EDF5]">{selectedProgramme.titre}</h2>
                 {selectedProgramme.client && (
                   <p className="text-gray-500 dark:text-[#8896A8]">Pour: {selectedProgramme.client.prenom} {selectedProgramme.client.nom}</p>
                 )}
               </div>
-              <button onClick={() => setShowViewModal(false)} className="p-2 hover:bg-gray-100 dark:bg-[#243044] rounded-lg"><X /></button>
+              <button onClick={() => setShowViewModal(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-[#243044] rounded-lg"><X /></button>
             </div>
 
-            <div className="flex gap-4 mb-6">
-              <span className={`px-3 py-1 rounded-full ${getStatutColor(selectedProgramme.statut)}`}>{selectedProgramme.statut}</span>
-              <span className="px-3 py-1 bg-gray-100 dark:bg-[#243044] rounded-full">{selectedProgramme.duree_semaines} semaines</span>
+            <div className="overflow-y-auto flex-1 p-6 md:p-8">
+              <div className="flex gap-4 mb-6">
+                <span className={`px-3 py-1 rounded-full ${getStatutColor(selectedProgramme.statut)}`}>{selectedProgramme.statut}</span>
+                <span className="px-3 py-1 bg-gray-100 dark:bg-[#243044] rounded-full dark:text-[#D4DAE6]">{selectedProgramme.duree_semaines} semaines</span>
+              </div>
+
+              <div className="prose max-w-none">
+                <pre className="whitespace-pre-wrap font-sans text-gray-700 dark:text-[#D4DAE6]">{selectedProgramme.contenu}</pre>
+              </div>
             </div>
 
-            <div className="prose max-w-none">
-              <pre className="whitespace-pre-wrap font-sans text-gray-700 dark:text-[#D4DAE6]">{selectedProgramme.contenu}</pre>
-            </div>
-
-            <div className="flex gap-3 mt-8 pt-6 border-t">
-              <button onClick={() => setShowViewModal(false)} className="flex-1 py-3 border border-gray-300 dark:border-[#2E3D55] rounded-xl hover:bg-gray-50 dark:bg-[#0F1923]">Fermer</button>
+            <div className="border-t border-gray-100 dark:border-[#2E3D55] p-4 md:p-6 flex gap-3 flex-shrink-0">
+              <button onClick={() => setShowViewModal(false)} className="flex-1 py-3 border border-gray-300 dark:border-[#2E3D55] text-gray-700 dark:text-[#D4DAE6] rounded-xl hover:bg-gray-50 dark:bg-[#0F1923]">Fermer</button>
             </div>
           </motion.div>
         </div>
