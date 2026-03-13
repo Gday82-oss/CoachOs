@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { Routes, Route, NavLink, useLocation } from 'react-router-dom';
 import { supabase } from './lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, Calendar, Dumbbell, BarChart3 } from 'lucide-react';
+import { Home, Calendar, Dumbbell, BarChart3, User } from 'lucide-react';
 
 import ClientToday from './pages/client-mobile/ClientToday';
 import ClientSeancesMobile from './pages/client-mobile/ClientSeancesMobile';
 import ClientProgrammeMobile from './pages/client-mobile/ClientProgrammeMobile';
 import ClientProgresMobile from './pages/client-mobile/ClientProgresMobile';
+import ClientProfile from './pages/client-mobile/ClientProfile';
 
 interface ClientProfile {
   id: string;
@@ -33,6 +34,7 @@ const navItems = [
   { path: '/client/seances', icon: Calendar, label: 'Séances' },
   { path: '/client/programme', icon: Dumbbell, label: 'Programme' },
   { path: '/client/progres', icon: BarChart3, label: 'Progrès' },
+  { path: '/client/profil', icon: User, label: 'Profil' },
 ];
 
 export default function ClientApp() {
@@ -190,6 +192,7 @@ export default function ClientApp() {
               <Route path="/seances" element={<ClientSeancesMobile client={client} />} />
               <Route path="/programme" element={<ClientProgrammeMobile client={client} />} />
               <Route path="/progres" element={<ClientProgresMobile client={client} />} />
+              <Route path="/profil" element={<ClientProfile client={client} />} />
             </Routes>
           </motion.div>
         </AnimatePresence>

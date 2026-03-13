@@ -16,17 +16,21 @@ import {
   Moon,
   Bell,
   Search,
-  LogOut
+  LogOut,
+  Bot,
+  Receipt,
 } from 'lucide-react';
 import Logo from './components/Logo';
 import { useTheme } from './contexts/ThemeContext';
 import { supabase } from './lib/supabase';
+import ChatbotIA from './components/coach/ChatbotIA';
 import Dashboard from './pages/Dashboard';
 import Clients from './pages/Clients';
 import Seances from './pages/Seances';
 import Programmes from './pages/Programmes';
 import Metriques from './pages/Metriques';
 import Attestations from './pages/Attestations';
+import Facturation from './pages/Facturation';
 import EmailReminders from './pages/EmailReminders';
 import SettingsPage from './pages/Settings';
 
@@ -37,6 +41,7 @@ const navItems = [
   { path: '/app/programmes', icon: Dumbbell, label: 'Programmes' },
   { path: '/app/metriques', icon: Activity, label: 'Métriques' },
   { path: '/app/attestations', icon: FileText, label: 'Attestations' },
+  { path: '/app/facturation', icon: Receipt, label: 'Facturation' },
   { path: '/app/emails', icon: Mail, label: 'Emails' },
   { path: '/app/settings', icon: Settings, label: 'Paramètres' },
 ];
@@ -50,6 +55,7 @@ interface CoachInfo {
 
 export default function CoachApp() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [chatbotOpen, setChatbotOpen] = useState(false);
   const [coach, setCoach] = useState<CoachInfo | null>(null);
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
@@ -321,11 +327,28 @@ export default function CoachApp() {
             <Route path="programmes" element={<Programmes />} />
             <Route path="metriques" element={<Metriques />} />
             <Route path="attestations" element={<Attestations />} />
+            <Route path="facturation" element={<Facturation />} />
             <Route path="emails" element={<EmailReminders />} />
             <Route path="settings" element={<SettingsPage />} />
           </Routes>
         </div>
       </main>
+
+      {/* ── CHATBOT IA — bouton flottant + panneau ───────── */}
+      <AnimatePresence>
+        {chatbotOpen && <ChatbotIA onClose={() => setChatbotOpen(false)} />}
+      </AnimatePresence>
+
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => setChatbotOpen(prev => !prev)}
+        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-3 rounded-2xl text-white font-semibold text-sm shadow-xl"
+        style={{ background: '#1A2B4A', boxShadow: '0 8px 30px rgba(26,43,74,0.35)' }}
+      >
+        <Bot size={20} />
+        Assistant IA
+      </motion.button>
     </div>
   );
 }

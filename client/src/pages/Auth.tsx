@@ -90,19 +90,33 @@ export default function Auth({ initialMode = 'login' }: AuthProps) {
         navigate('/app');
       } else {
         // Inscription
-        const { error } = await supabase.auth.signUp({
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
           email,
           password,
           options: {
             data: {
+              role: 'coach',
               nom,
               prenom,
             },
           },
         });
-        if (error) throw error;
-        alert('Compte créé ! Vérifiez votre email.');
+        if (signUpError) throw signUpError;
+
+        // Créer la ligne du coach dans la table "coachs"
+        if (signUpData.user) {
+          await supabase.from('coachs').insert({
+            id: signUpData.user.id,
+            email,
+            prenom,
+            nom,
+          });
+        }
+
+        setError('');
         setIsLogin(true);
+        // Afficher un message de succès via le champ error (couleur verte gérée ci-dessous)
+        setError('SUCCESS');
       }
     } catch (err: any) {
       setError(getAuthErrorMessage(err.message || ''));
@@ -128,7 +142,12 @@ export default function Auth({ initialMode = 'login' }: AuthProps) {
           </p>
         </div>
 
-        {error && (
+        {error && error === 'SUCCESS' && (
+          <div className="bg-green-50 text-green-700 p-3 rounded-lg mb-4 text-sm">
+            Compte créé ! Vérifiez votre email pour confirmer votre inscription, puis connectez-vous.
+          </div>
+        )}
+        {error && error !== 'SUCCESS' && (
           <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm">
             {error === 'NOT_COACH' ? (
               <>

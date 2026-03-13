@@ -6,6 +6,7 @@ import {
   Menu, X, ChevronRight,
 } from 'lucide-react';
 import Logo from '../components/Logo';
+import DemoModal from '../components/DemoModal';
 
 // ─────────────────────────────────────────────────────────
 // Hooks utilitaires
@@ -135,21 +136,24 @@ function Header() {
         {/* Actions desktop */}
         <div className="hidden md:flex items-center gap-2">
           <Link
+            to="/login"
+            className="rounded-full font-medium cursor-pointer transition-opacity duration-200 hover:opacity-85"
+            style={{ background: 'linear-gradient(135deg, #1A2B4A, #2a4070)', color: 'white', border: 'none', borderRadius: '9999px', padding: '12px 28px', fontSize: '15px', fontWeight: 500 }}
+          >
+            Espace Coach
+          </Link>
+          <Link
             to="/client/login"
-            className="text-sm font-semibold px-4 py-2 rounded-full border-2 transition-all duration-200 hover:scale-105 bg-[#7C3AED] text-white border-[#7C3AED] hover:bg-[#6D28D9]"
+            className="rounded-full font-medium cursor-pointer transition-opacity duration-200 hover:opacity-85"
+            style={{ background: 'linear-gradient(135deg, #00C896, #00a87e)', color: 'white', border: 'none', borderRadius: '9999px', padding: '12px 28px', fontSize: '15px', fontWeight: 500 }}
           >
             Espace Client
           </Link>
           <Link
-            to="/login"
-            className="text-sm font-semibold px-4 py-2 rounded-full text-white transition-all duration-200 hover:scale-105 hover:shadow-lg"
-            style={{ background: '#1A2B4A' }}
+            to="/register"
+            className="rounded-full font-medium cursor-pointer transition-opacity duration-200 hover:opacity-85"
+            style={{ background: 'linear-gradient(135deg, #00E5FF, #00C896)', color: '#1A2B4A', border: 'none', borderRadius: '9999px', padding: '12px 28px', fontSize: '15px', fontWeight: 500 }}
           >
-            Espace Coach
-          </Link>
-          <Link to="/register"
-            className="text-sm font-semibold px-5 py-2.5 rounded-full text-white transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-[#00C896]/25"
-            style={{ background: 'linear-gradient(135deg, #00C896, #00E5FF)' }}>
             S'inscrire
           </Link>
         </div>
@@ -177,18 +181,19 @@ function Header() {
             </a>
           ))}
           <div className="pt-2 flex flex-col gap-2">
-            <Link to="/client/login" onClick={() => setOpen(false)}
-              className="block text-center py-2.5 text-sm font-semibold rounded-full border-2 transition-colors bg-[#7C3AED] text-white border-[#7C3AED] hover:bg-[#6D28D9]">
-              Espace Client
-            </Link>
             <Link to="/login" onClick={() => setOpen(false)}
-              className="block text-center py-2.5 text-sm font-semibold text-white rounded-lg"
-              style={{ background: '#1A2B4A' }}>
+              className="block text-center rounded-full font-medium cursor-pointer transition-opacity duration-200 hover:opacity-85"
+              style={{ background: 'linear-gradient(135deg, #1A2B4A, #2a4070)', color: 'white', border: 'none', borderRadius: '9999px', padding: '12px 28px', fontSize: '15px', fontWeight: 500 }}>
               Espace Coach
             </Link>
+            <Link to="/client/login" onClick={() => setOpen(false)}
+              className="block text-center rounded-full font-medium cursor-pointer transition-opacity duration-200 hover:opacity-85"
+              style={{ background: 'linear-gradient(135deg, #00C896, #00a87e)', color: 'white', border: 'none', borderRadius: '9999px', padding: '12px 28px', fontSize: '15px', fontWeight: 500 }}>
+              Espace Client
+            </Link>
             <Link to="/register" onClick={() => setOpen(false)}
-              className="block text-center py-2.5 text-sm font-semibold text-white rounded-lg"
-              style={{ background: 'linear-gradient(135deg, #00C896, #00E5FF)' }}>
+              className="block text-center rounded-full font-medium cursor-pointer transition-opacity duration-200 hover:opacity-85"
+              style={{ background: 'linear-gradient(135deg, #00E5FF, #00C896)', color: '#1A2B4A', border: 'none', borderRadius: '9999px', padding: '12px 28px', fontSize: '15px', fontWeight: 500 }}>
               S'inscrire gratuitement
             </Link>
           </div>
@@ -268,8 +273,10 @@ function HeroIllustration() {
 
 function Hero() {
   const [ref, visible] = useScrollReveal<HTMLDivElement>();
+  const [showDemo, setShowDemo] = useState(false);
 
   return (
+    <>
     <section
       className="min-h-screen flex items-center pt-16"
       style={{
@@ -312,11 +319,12 @@ function Hero() {
                 Commencer gratuitement
                 <ArrowRight size={18} />
               </Link>
-              <a href="#fonctionnalites" onClick={scrollToId('fonctionnalites')}
+              <button
+                onClick={() => setShowDemo(true)}
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-semibold text-base text-[#1A2B4A] bg-white border-2 border-[#1A2B4A]/10 hover:border-[#00C896] hover:text-[#00C896] transition-all duration-200">
                 Voir la démo
                 <ChevronRight size={18} />
-              </a>
+              </button>
             </div>
 
             {/* Stats bar avec séparateurs verticaux */}
@@ -344,6 +352,8 @@ function Hero() {
         </div>
       </div>
     </section>
+    {showDemo && <DemoModal onClose={() => setShowDemo(false)} />}
+    </>
   );
 }
 
@@ -598,12 +608,13 @@ function Footer() {
             </p>
             <div className="flex gap-3 mt-5">
               <Link to="/login"
-                className="text-xs font-semibold px-3 py-1.5 rounded-full text-white transition-colors hover:opacity-80"
-                style={{ background: '#1A2B4A', border: '1px solid rgba(255,255,255,0.15)' }}>
+                className="cursor-pointer transition-opacity duration-200 hover:opacity-[0.82]"
+                style={{ background: 'linear-gradient(135deg, #1A2B4A, #2a4070)', color: 'white', border: 'none', borderRadius: '9999px', padding: '13px 32px', fontSize: '15px', fontWeight: 500 }}>
                 Espace Coach
               </Link>
               <Link to="/client/login"
-                className="text-xs font-semibold px-3 py-1.5 rounded-full transition-colors bg-[#7C3AED] text-white border border-[#7C3AED] hover:bg-[#6D28D9]">
+                className="cursor-pointer transition-opacity duration-200 hover:opacity-[0.82]"
+                style={{ background: 'linear-gradient(135deg, #00C896, #00a87e)', color: 'white', border: 'none', borderRadius: '9999px', padding: '13px 32px', fontSize: '15px', fontWeight: 500 }}>
                 Espace Client
               </Link>
             </div>

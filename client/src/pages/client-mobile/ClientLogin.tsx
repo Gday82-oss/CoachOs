@@ -4,6 +4,15 @@ import { supabase } from '../../lib/supabase';
 import { motion } from 'framer-motion';
 import { Heart, LogIn } from 'lucide-react';
 
+const GoogleIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
+    <path fill="#4285F4" d="M47.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h13.2c-.6 3-2.3 5.5-4.9 7.2v6h7.9c4.6-4.3 7.3-10.6 7.3-17.2z"/>
+    <path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.9-6c-2.1 1.4-4.9 2.3-8 2.3-6.1 0-11.3-4.1-13.2-9.7H2.7v6.2C6.7 42.9 14.8 48 24 48z"/>
+    <path fill="#FBBC05" d="M10.8 28.8c-.5-1.4-.8-2.8-.8-4.3s.3-3 .8-4.3v-6.2H2.7C1 17.2 0 20.5 0 24s1 6.8 2.7 9.9l8.1-5.1z"/>
+    <path fill="#EA4335" d="M24 9.5c3.4 0 6.5 1.2 8.9 3.5l6.7-6.7C35.9 2.4 30.4 0 24 0 14.8 0 6.7 5.1 2.7 14.1l8.1 5.1C12.7 13.6 17.9 9.5 24 9.5z"/>
+  </svg>
+);
+
 export default function ClientLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -63,6 +72,25 @@ export default function ClientLogin() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     doLogin();
+  };
+
+  const handleGoogleLogin = async () => {
+    if (loading) return;
+    setLoading(true);
+    setError('');
+    try {
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: 'https://mycarecoach.app/client',
+          queryParams: { access_type: 'offline', prompt: 'consent' },
+        },
+      });
+      if (oauthError) throw oauthError;
+    } catch (err: any) {
+      setError('Impossible de se connecter avec Google. Veuillez réessayer.');
+      setLoading(false);
+    }
   };
 
   return (
@@ -148,6 +176,24 @@ export default function ClientLogin() {
             )}
           </button>
         </form>
+
+        {/* Séparateur */}
+        <div className="flex items-center gap-3 my-5">
+          <div className="flex-1 border-t border-gray-200" />
+          <span className="text-xs text-gray-400 font-medium">— ou —</span>
+          <div className="flex-1 border-t border-gray-200" />
+        </div>
+
+        {/* Bouton Google */}
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          disabled={loading}
+          className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 rounded-2xl py-3.5 px-4 text-gray-700 font-semibold hover:bg-gray-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
+        >
+          <GoogleIcon />
+          Continuer avec Google
+        </button>
 
         <p className="mt-6 text-center text-sm text-gray-400">
           Premiere connexion ?{' '}
